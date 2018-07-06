@@ -101,17 +101,19 @@ def _convert_to_float(output):
         raise(NotImplementedError('The following unit is not yet supported: ' + output[-1] + ' or there is something wrong with the output: ' + output))
     return hash_rate
 
+from urllib.request import Request, urlopen
 
 def nicehash_multialgo_info():
-    """Retrieves pay rates and connection ports for every algorithm from the NiceHash API."""
-    response = urllib.request.urlopen('https://api.nicehash.com/api?method=simplemultialgo.info',
-                                      None, NICEHASH_TIMEOUT)
+    """Retrieves pay rates and connection ports for every algorithm from the ZPOOL API."""
+    req = Request('https://www.zpool.ca/api/status',headers={'User-Agent': 'Mozilla/5.0'})
+    response = urllib.request.urlopen(req,None,NICEHASH_TIMEOUT)
     query = json.loads(response.read().decode('ascii'))
     paying = {}
     ports = {}
-    for algorithm in query['result']['simplemultialgo']:
+    for akey in dict.keys(query):
+        algorithm=query[akey]
         name = algorithm['name']
-        paying[name] = float(algorithm['paying'])
+        paying[name] = float(algorithm['estimate_current'])
         ports[name] = int(algorithm['port'])
     return paying, ports
 
@@ -208,8 +210,8 @@ def main():
 
                 # start miner
                 logging.info('starting mining using ' + best_algorithm + ' using ' + str(benchmarks[best_algorithm]['nof_threads']) + ' threads')
-                cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET + '.' + WORKER, '-p', 'x',
-                    '-o', 'stratum+tcp://' + best_algorithm + '.' + REGION + '.' + 'nicehash.com:' + str(ports[best_algorithm]),
+                cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET + '.' + WORKER, '-p', 'c=BTC',
+                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
                     '-a', best_algorithm, '-t', str(benchmarks[best_algorithm]['nof_threads'])], benchmarks[best_algorithm]['nof_threads'])
                 cpuminer_thread.start()
                 running_algorithm = best_algorithm
