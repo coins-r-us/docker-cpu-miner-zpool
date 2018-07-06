@@ -1,6 +1,6 @@
 # Autoswitching ZPOOL CPU Miner
 
-Docker image for running an autoswitching CPU miner for Nicehash. The code is based on the cpu-miner-opt by JayDDee
+This forked from https://github.com/pbutenee/docker-cpu-miner Docker image for running an autoswitching CPU miner for ZPOOL. The code is based on the cpu-miner-opt by JayDDee
 https://github.com/JayDDee/cpuminer-opt
 
 ## Usage
