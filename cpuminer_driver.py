@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Cross-platform controller for NiceHash Excavator for Nvidia."""
+"""Cross-platform controller for ZPOOL CPU"""
 
 # Example usage:
-#   $ excavator -p 3456 &
 #   $ sleep 5
-#   $ python3 excavator-driver.py
+#   $ python3 cpuminer-driver.py WORKER WALLET
 
 __author__ = "Ryan Young"
 __email__ = "rayoung@utexas.edu"
@@ -29,7 +28,7 @@ import numpy as np
 WALLET = '35LdgWoNdRMXK6dQzJaJSnaLw5W3o3tFG6'
 WORKER = 'worker1'
 REGION = 'eu' # eu, usa, hk, jp, in, br
-BENCHMARKS_FILE = '/host_files/benchmarks.json'
+BENCHMARKS_FILE = './benchmarks.json'
 
 PROFIT_SWITCH_THRESHOLD = 0.05
 UPDATE_INTERVAL = 60
@@ -126,7 +125,7 @@ This is to increase the likelyhood that an almost as profitable algorithm is sel
 def nicehash_mbtc_per_day(benchmarks, paying):
     """Calculates the BTC/day amount for every algorithm.
     device -- excavator device id for benchmarks
-    paying -- algorithm pay information from NiceHash
+    paying -- algorithm pay information from ZPOOL
     """
     revenue = {}
     for algorithm in benchmarks:
@@ -172,14 +171,14 @@ def main():
         try:
             paying, ports = nicehash_multialgo_info()
         except urllib.error.URLError as err:
-            logging.warning('failed to retrieve NiceHash stats: %s' % err.reason)
+            logging.warning('failed to retrieve ZPOOL stats: %s' % err.reason)
         except urllib.error.HTTPError as err:
-            logging.warning('server error retrieving NiceHash stats: %s %s'
+            logging.warning('server error retrieving ZPOOL stats: %s %s'
                             % (err.code, err.reason))
         except socket.timeout:
-            logging.warning('failed to retrieve NiceHash stats: timed out')
+            logging.warning('failed to retrieve ZPOOL stats: timed out')
         except (json.decoder.JSONDecodeError, KeyError):
-            logging.warning('failed to parse NiceHash stats')
+            logging.warning('failed to parse ZPOOL stats')
         else:
             if cpuminer_thread != None:
                 # Update hash rate if enough accepted hases have been seen
