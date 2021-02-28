@@ -248,12 +248,13 @@ def main():
                 benchmarks[running_algorithm]['last_fail_time'] = time()
                 json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                 logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
-                payrates[running_algorithm] = 0
                 killswitch='engaged'
                 profitinfo()
+                payrates[running_algorithm] = 0
                 # kill previous miner
                 cpuminer_thread.join()
                 logging.info('killed process running ' + running_algorithm)
+                running_algorithm = None
 
         # Compute payout and get best algorithm
         payrates = nicehash_mbtc_per_day(benchmarks, paying)
@@ -313,8 +314,12 @@ def main():
                         logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                     else:
                         logline='.. DISABLING (temporary) '  + logline + ' .. REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
-                        #cpuminer_thread.join()
                         payrates[running_algorithm] = 0
+                        # kill previous miner
+                        cpuminer_thread.join()
+                        logging.info('killed process running ' + running_algorithm)
+                        running_algorithm = None
+
 
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline) 
