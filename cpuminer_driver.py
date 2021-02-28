@@ -278,6 +278,7 @@ def main():
                 if cpuminer_thread != None:
                     cpuminer_thread.join()
                     logging.info('killed process running ' + running_algorithm)
+                    killswitch='no'
             if killswitch != 'engaged':
                 if cpuminer_thread == None:
                     # start miner
