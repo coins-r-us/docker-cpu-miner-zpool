@@ -228,6 +228,7 @@ def main():
         #else:
         if cpuminer_thread == None:
             profitinfo()
+            running_algorithm = None
         if cpuminer_thread != None:
             cpuminer_thread.time_running=time() - cpuminer_thread.start_time
         # Update hash rate if enough accepted hashes have been seen
@@ -319,7 +320,6 @@ def main():
                         cpuminer_thread.join()
                         logging.info('killed process running ' + running_algorithm)
                         running_algorithm = None
-
 
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline) 
