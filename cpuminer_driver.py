@@ -202,7 +202,7 @@ def main():
     cpuminer_thread = None
 
     def profitinfo():
-        logging.info('# $$$ # : profit table:')
+        logging.info('# $$$ # : profit table: (ascending)')
         printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
         for key, value in dict(printpayrates).items():
             if value == 0:
