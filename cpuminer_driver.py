@@ -313,6 +313,8 @@ def main():
                     else:
                         logline=logline + '.. DISABLING (temporary) REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                         cpuminer_thread.join()
+                        payrates[running_algorithm] = 0
+
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline) 
                 if (np.sum(cpuminer_thread.nof_hashes) > 0) :
