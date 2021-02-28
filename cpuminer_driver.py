@@ -38,7 +38,7 @@ BENCHMARKS_FILE = '/host_files/benchmarks.json'
 MAXTHREADS=999
 
 PROFIT_SWITCH_THRESHOLD = 0.01
-UPDATE_INTERVAL = 45
+UPDATE_INTERVAL = 60
 
 # artificailly increase profit if it hasn't been updated ever or in the past 24h
 PROFIT_INCREASE_TIME = 24 * 60 * 60    # s
