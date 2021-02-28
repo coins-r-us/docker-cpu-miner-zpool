@@ -202,8 +202,7 @@ def main():
     cpuminer_thread = None
 
     def profitinfo():
-        payrates = nicehash_mbtc_per_day(benchmarks, paying)
-        printpayrates=payrates
+        printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
         for key, value in dict(printpayrates).items():
             if value == 0:
                 del printpayrates[key]
@@ -230,8 +229,6 @@ def main():
             payrates = nicehash_mbtc_per_day(benchmarks, paying)
 
             best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
-            if cpuminer_thread == None:
-                profitinfo()
             if cpuminer_thread != None:
                 cpuminer_thread.time_running=time() - cpuminer_thread.start_time
             # Update hash rate if enough accepted hashes have been seen
@@ -277,8 +274,8 @@ def main():
                 # kill previous miner
                 if cpuminer_thread != None:
                     cpuminer_thread.join()
-                    logging.info('killed process running ' + running_algorithm)
-                    running_algorithm=None
+                    logging.info('killswitch-killed process running ' + running_algorithm)
+                    #running_algorithm=None
                     killswitch='no'
             if cpuminer_thread == None:
                 # start miner
