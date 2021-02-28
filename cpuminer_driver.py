@@ -307,7 +307,6 @@ def main():
 
         def printHashRateAndPayRate():
             if cpuminer_thread != None:
-              if running_algorithm is not None:
                 cpuminer_thread.time_running=time() - cpuminer_thread.start_time
                 logline=running_algorithm + ' FOUND ' + str(cpuminer_thread.shares_found) +' shares after ' + '{:6.3f}'.format(time() - cpuminer_thread.start_time) + ' s '
                 if cpuminer_thread.shares_found == 0:
