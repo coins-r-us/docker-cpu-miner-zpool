@@ -220,7 +220,7 @@ def main():
                 del printpayrates[key]
         #logging.info(printpayrates)
         for key, value in sorted(dict(printpayrates).items(), key=lambda x: x[1], reverse=False):
-            logging.info('# $$$ # ¢ = ' + key.rjust(10 , ' ') + ':\t{:0.16f}'.format(value)  + ' #' )
+            logging.info('# $$$ # ¢ = ' + key.rjust(10 , ' ') + ':\t{:0.16f}'.format(value)  + '   #' )
         logging.info('# $$$ ##########################################')
 
 
