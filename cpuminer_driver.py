@@ -259,14 +259,14 @@ def main():
         payrates = nicehash_mbtc_per_day(benchmarks, paying)
         best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
         killswitch='no'
-        algoswitch=0
-        payrateswitch=0
+        algoswitch=False
+        payrateswitch=False
         # Switch algorithm if it's worth while
         if running_algorithm == None or running_algorithm != best_algorithm:
-            algoswitch=1
+            algoswitch=True
         if running_algorithm != None:
             if payrates[running_algorithm] == 0:
-                payrateswitch=1
+                payrateswitch=True
                 logging.info("switching due to payrate 0")
                 cpuminer_thread.join()
                 profitinfo()
