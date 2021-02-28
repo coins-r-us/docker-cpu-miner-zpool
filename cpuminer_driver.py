@@ -212,7 +212,7 @@ def main():
             for key, value in dict(benchmarks).items():
                 benchmarks[key]['last_fail_time']=0
         logging.info('# $$$ ##########################################')
-        logging.info('# $$$ ##      profit table: (ascending) ## $$$ #')
+        logging.info('# $$$ #:    profit table: (ascending) ## $$$  :#')
         logging.info('# $$$ #----------------------------------------#')
         printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
         for key, value in dict(printpayrates).items():
