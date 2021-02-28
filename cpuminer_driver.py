@@ -202,7 +202,18 @@ def main():
     cpuminer_thread = None
 
     def profitinfo():
-        logging.info('# $$$ # : profit table: (ascending)')
+        printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
+        AllRatesEmpty=True
+        for key, value in dict(printpayrates).items():
+            if value != 0:
+                AllRatesEmpty=False
+        if AllRatesEmpty == True:
+            logging.info('all profits on 0 ..resetting last_fail_time')
+            for key, value in dict(benchmarks).items():
+                benchmarks[key]['last_fail_time']=0
+        logging.info('# $$$ ######################################')
+        logging.info('# $$$ ##  profit table: (ascending) ## $$$ #')
+        logging.info('# $$$ ##----------------------------------##')
         printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
         for key, value in dict(printpayrates).items():
             if value == 0:
@@ -210,7 +221,7 @@ def main():
         #logging.info(printpayrates)
         for key, value in sorted(dict(printpayrates).items(), key=lambda x: x[1], reverse=False):
             logging.info('# $$$ # : ' + key.rjust(10 , ' ') + ':\t{:0.16f}'.format(value))
-        logging.info('# $$$ # : ########')
+        logging.info('# $$$ ######################################')
 
 
     while True:
