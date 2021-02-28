@@ -202,13 +202,15 @@ def main():
     cpuminer_thread = None
 
     def profitinfo():
-        printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
-        for key, value in dict(printpayrates).items():
-            if value == 0:
-                del printpayrates[key]
-        #logging.info(printpayrates)
-        for key, value in sorted(dict(printpayrates).items(), key=lambda x: x[1], reverse=False):
-            logging.info('# $$$ # : ' + key.rjust(10 , ' ') + ':\t{:0.16f}'.format(value))
+    logging.info('# $$$ # : profit table:')
+    printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
+    for key, value in dict(printpayrates).items():
+        if value == 0:
+            del printpayrates[key]
+    #logging.info(printpayrates)
+    for key, value in sorted(dict(printpayrates).items(), key=lambda x: x[1], reverse=False):
+        logging.info('# $$$ # : ' + key.rjust(10 , ' ') + ':\t{:0.16f}'.format(value))
+    logging.info('# $$$ # : ########')
 
 
     while True:
@@ -262,7 +264,7 @@ def main():
                     payrateswitch=True
                     logging.info("switching due to payrate 0")
                     killswitch='engaged'
-                    profitinfo()
+                    #profitinfo()
                 else:
                     if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
                         payrateswitch=1
@@ -277,13 +279,14 @@ def main():
                     logging.info('killswitch-killed process running ' + running_algorithm)
                     #running_algorithm=None
                     cpuminer_thread = None
-                    profitinfo()
+                    #profitinfo()
 
 ### boot thread
             #re-Calculate rates
             payrates = nicehash_mbtc_per_day(benchmarks, paying)
             best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             if cpuminer_thread == None or killswitch == 'engaged':
+                profitinfo()
                 # start miner
                 cpucount=benchmarks[best_algorithm]['nof_threads']
                 if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
