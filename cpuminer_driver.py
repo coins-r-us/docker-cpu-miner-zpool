@@ -265,10 +265,11 @@ def main():
                     payrateswitch=1
                     logging.info("switching due to payrate 0")
                     profitinfo()
-                if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
-                    payrateswitch=1
-                    logging.info("switching due to profitability")
-                    profitinfo()
+                if payrates[running_algorithm] != 0:
+                    if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
+                        payrateswitch=1
+                        logging.info("switching due to profitability")
+                        profitinfo()
             if algoswitch or payrateswitch:
                 killswtich='engaged'
             if  killswitch == 'engaged':
