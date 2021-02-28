@@ -245,10 +245,11 @@ def main():
         ### zero payrate if we get no shares for WAITTIME
             #logging.info('checking ' + str(WAITTIME) + 'against' + cpuminer_thread.time_running + ' and sharecount ' + cpuminer_thread.shares_found
             if cpuminer_thread.time_running > WAITTIME and cpuminer_thread.shares_found == 0:
-                payrates[running_algorithm] = 0
                 benchmarks[running_algorithm]['last_fail_time'] = time()
                 json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                 logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
+                payrates[running_algorithm] = 0
+                killswtich='engaged'
                 profitinfo()
 
         # Compute payout and get best algorithm
