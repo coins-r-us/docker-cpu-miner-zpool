@@ -7,8 +7,8 @@
 #   $ sleep 5
 #   $ python3 cpuminer-driver.py WORKER WALLET PAYOUTMETHOD
 
-__author__ = "Ryan Young"
-__email__ = "rayoung@utexas.edu"
+#__author__ = "Ryan Young"
+#__email__ = "rayoung@utexas.edu"
 __license__ = "public domain"
 
 import json
@@ -85,18 +85,18 @@ class MinerThread(threading.Thread):
                 if 'CPU #' in line:
                     # find hash rate
                     line = line[ : line.rfind('H/s')]
-                    
+
                     #logging.info('parsing:')
                     rate=line[line.rfind(': ') + 2 : ]
                     #rate=rate.replace(" ","")
                     #logging.info(rate)
-                    #rate=rate + '.0' 
+                    #rate=rate + '.0'
                     ##parser expects "1111 k" OR "1234 M" OR "1.23 G"
                     hash_rate = _convert_to_float(rate)
-                    
+
 
                     #hash_rate = _convert_to_float(line[line.rfind(', ') + 2 : ])
-					
+
                     # find nof hashes
                     line = line[ : line.rfind('H, ')]
                     nof_hashes = _convert_to_float(line[line[ : -2].rfind(': ') + 2 : ])
@@ -215,7 +215,7 @@ def main():
     while True:
         try:
             paying, ports = nicehash_multialgo_info()
-            
+
         except urllib.error.URLError as err:
             logging.warning('failed to retrieve ZPOOL stats: %s' % err.reason)
         except urllib.error.HTTPError as err:
@@ -226,6 +226,10 @@ def main():
         except (json.decoder.JSONDecodeError, KeyError):
             logging.warning('failed to parse ZPOOL stats')
         else:
+            # Compute payout and get best algorithm
+            payrates = nicehash_mbtc_per_day(benchmarks, paying)
+
+            best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             if cpuminer_thread == None:
                 profitinfo()
             if cpuminer_thread != None:
@@ -249,20 +253,16 @@ def main():
                     benchmarks[running_algorithm]['last_fail_time'] = time()
                     json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                     logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
-                    profitinfo()
 
-            # Compute payout and get best algorithm
-            payrates = nicehash_mbtc_per_day(benchmarks, paying)
-            best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             killswitch='no'
-            algoswitch=0
-            payrateswitch=0
+            algoswitch=False
+            payrateswitch=False
             # Switch algorithm if it's worth while
             if running_algorithm == None or running_algorithm != best_algorithm:
-                algoswitch=1
+                algoswitch=True
             if running_algorithm != None:
                 if payrates[running_algorithm] == 0:
-                    payrateswitch=1
+                    payrateswitch=True
                     logging.info("switching due to payrate 0")
                     profitinfo()
                 if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
@@ -301,7 +301,7 @@ def main():
                 if cpuminer_thread.shares_found == 0:
                     logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                 if cpuminer_thread.time_running > 1:
-                    logging.info(logline) 
+                    logging.info(logline)
                 if (np.sum(cpuminer_thread.nof_hashes) > 0) :
                     hash_rate = np.sum(cpuminer_thread.hash_sum / cpuminer_thread.nof_hashes)
                     #logging.info('Current average hashrate is %f H/s' % hash_rate)
