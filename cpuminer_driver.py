@@ -268,6 +268,7 @@ def main():
             if payrates[running_algorithm] == 0:
                 payrateswitch=1
                 logging.info("switching due to payrate 0")
+                cpuminer_thread.join()
                 profitinfo()
             else:
                 logging.info('# $$$ # :  PROFIT CALC: payrates[best_algo/current_algo] =  ' + \
@@ -312,7 +313,7 @@ def main():
                         logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                     else:
                         logline=logline + '.. DISABLING (temporary) REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
-                        cpuminer_thread.join()
+                        #cpuminer_thread.join()
                         payrates[running_algorithm] = 0
 
                 if cpuminer_thread.time_running > 1:
