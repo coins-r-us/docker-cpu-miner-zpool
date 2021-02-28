@@ -38,7 +38,7 @@ BENCHMARKS_FILE = '/host_files/benchmarks.json'
 MAXTHREADS=999
 
 PROFIT_SWITCH_THRESHOLD = 0.01
-UPDATE_INTERVAL = 60
+UPDATE_INTERVAL = 45
 
 # artificailly increase profit if it hasn't been updated ever or in the past 24h
 PROFIT_INCREASE_TIME = 24 * 60 * 60    # s
@@ -225,101 +225,81 @@ def main():
             logging.warning('failed to retrieve ZPOOL stats: timed out')
         except (json.decoder.JSONDecodeError, KeyError):
             logging.warning('failed to parse ZPOOL stats')
-        #else:
-        if cpuminer_thread == None:
-            profitinfo()
-            running_algorithm = None
-        if cpuminer_thread != None:
-            cpuminer_thread.time_running=time() - cpuminer_thread.start_time
-        # Update hash rate if enough accepted hashes have been seen
-            if np.min(cpuminer_thread.nof_hashes) > NOF_HASHES_BEFORE_UPDATE:
-                benchmarks[running_algorithm]['hash_rate'] = np.sum(cpuminer_thread.hash_sum / cpuminer_thread.nof_hashes)
-                benchmarks[running_algorithm]['last_updated'] = time()
-                json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
-                logging.info('UPDATED HASH RATE OF ' + running_algorithm + ' TO: ' + str(benchmarks[running_algorithm]['hash_rate']))
-        # Remove payrate if the algorithm is not working
-            if cpuminer_thread.fail_count > 5 and time() - cpuminer_thread.last_fail_time < 60:
-                payrates[running_algorithm] = 0
-                benchmarks[running_algorithm]['last_fail_time'] = cpuminer_thread.last_fail_time
-                json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
-                logging.error(running_algorithm + ' FAILS MORE THAN ALLOWED SO IGNORING IT FOR NOW!')
-        ### zero payrate if we get no shares for WAITTIME
-            #logging.info('checking ' + str(WAITTIME) + 'against' + cpuminer_thread.time_running + ' and sharecount ' + cpuminer_thread.shares_found
-            if cpuminer_thread.time_running > WAITTIME and cpuminer_thread.shares_found == 0:
-                benchmarks[running_algorithm]['last_fail_time'] = time()
-                json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
-                logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
-                killswitch='engaged'
+        else:
+            if cpuminer_thread == None:
                 profitinfo()
-                payrates[running_algorithm] = 0
-                # kill previous miner
-                cpuminer_thread.join()
-                logging.info('killed process running ' + running_algorithm)
-                running_algorithm = None
+            if cpuminer_thread != None:
+                cpuminer_thread.time_running=time() - cpuminer_thread.start_time
+            # Update hash rate if enough accepted hashes have been seen
+                if np.min(cpuminer_thread.nof_hashes) > NOF_HASHES_BEFORE_UPDATE:
+                    benchmarks[running_algorithm]['hash_rate'] = np.sum(cpuminer_thread.hash_sum / cpuminer_thread.nof_hashes)
+                    benchmarks[running_algorithm]['last_updated'] = time()
+                    json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
+                    logging.info('UPDATED HASH RATE OF ' + running_algorithm + ' TO: ' + str(benchmarks[running_algorithm]['hash_rate']))
+            # Remove payrate if the algorithm is not working
+                if cpuminer_thread.fail_count > 5 and time() - cpuminer_thread.last_fail_time < 60:
+                    payrates[running_algorithm] = 0
+                    benchmarks[running_algorithm]['last_fail_time'] = cpuminer_thread.last_fail_time
+                    json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
+                    logging.error(running_algorithm + ' FAILS MORE THAN ALLOWED SO IGNORING IT FOR NOW!')
+            ### zero payrate if we get no shares for WAITTIME
+                #logging.info('checking ' + str(WAITTIME) + 'against' + cpuminer_thread.time_running + ' and sharecount ' + cpuminer_thread.shares_found
+                if cpuminer_thread.time_running > WAITTIME and cpuminer_thread.shares_found == 0:
+                    payrates[running_algorithm] = 0
+                    benchmarks[running_algorithm]['last_fail_time'] = time()
+                    json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
+                    logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
+                    profitinfo()
 
-        # Compute payout and get best algorithm
-        payrates = nicehash_mbtc_per_day(benchmarks, paying)
-        best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
-        killswitch='no'
-        algoswitch=False
-        payrateswitch=False
-        # Switch algorithm if it's worth while
-        if running_algorithm == None or running_algorithm != best_algorithm:
-            algoswitch=True
-        if running_algorithm != None:
-            if payrates[running_algorithm] == 0:
-                payrateswitch=True
-                logging.info("switching due to payrate 0")
-                cpuminer_thread.join()
-                profitinfo()
-            else:
-                logging.info('# $$$ # :  PROFIT CALC: payrates[best_algo/current_algo] =  ' + \
-                            '{:6.3f}'.format(payrates[best_algorithm]) + '/' + \
-                            '{:6.3f}'.format(payrates[running_algorithm]) + \
-                            ' HAS TO BE >= PROFITSWICH ==' + str(PROFIT_SWITCH_THRESHOLD))
+            # Compute payout and get best algorithm
+            payrates = nicehash_mbtc_per_day(benchmarks, paying)
+            best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
+            killswitch='no'
+            algoswitch=0
+            payrateswitch=0
+            # Switch algorithm if it's worth while
+            if running_algorithm == None or running_algorithm != best_algorithm:
+                algoswitch=1
+            if running_algorithm != None:
+                if payrates[running_algorithm] == 0:
+                    payrateswitch=1
+                    logging.info("switching due to payrate 0")
+                    profitinfo()
                 if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
                     payrateswitch=1
                     logging.info("switching due to profitability")
                     profitinfo()
-        if algoswitch or payrateswitch:
-            killswtich='engaged'
-        if  killswitch == 'engaged':
-            # kill previous miner
-            if cpuminer_thread != None:
-                cpuminer_thread.join()
-                logging.info('killed process running ' + running_algorithm)
-        if killswitch != 'engaged':
-            if cpuminer_thread == None:
-                # start miner
-                cpucount=benchmarks[best_algorithm]['nof_threads']
-                if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
-                    cpucount=int(MAXTHREADS)
-                logging.info('starting mining using ' + best_algorithm + ' using ' + str(cpucount) + ' threads')
-                #cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET , '-p', WORKER + ',c=BTC',
-                logging.info(['cpuminer', '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
-                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                    '-a', best_algorithm, '-t', str(cpucount)])
-                cpuminer_thread = MinerThread(['cpuminer', '-u', WALLET , '-p', WORKER + ',c=' + PAYMETH,
-                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                    '-a', best_algorithm, '-t', str(cpucount)], cpucount)
-                cpuminer_thread.start()
-                running_algorithm = best_algorithm
+            if algoswitch or payrateswitch:
+                killswtich='engaged'
+            if  killswitch == 'engaged':
+                # kill previous miner
+                if cpuminer_thread != None:
+                    cpuminer_thread.join()
+                    logging.info('killed process running ' + running_algorithm)
+            if killswitch != 'engaged':
+                if cpuminer_thread == None:
+                    # start miner
+                    cpucount=benchmarks[best_algorithm]['nof_threads']
+                    if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
+                        cpucount=int(MAXTHREADS)
+                    logging.info('starting mining using ' + best_algorithm + ' using ' + str(cpucount) + ' threads')
+                    #cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET , '-p', WORKER + ',c=BTC',
+                    logging.info(['cpuminer', '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
+                        '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
+                        '-a', best_algorithm, '-t', str(cpucount)])
+                    cpuminer_thread = MinerThread(['cpuminer', '-u', WALLET , '-p', WORKER + ',c=' + PAYMETH,
+                        '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
+                        '-a', best_algorithm, '-t', str(cpucount)], cpucount)
+                    cpuminer_thread.start()
+                    running_algorithm = best_algorithm
 
         def printHashRateAndPayRate():
             if cpuminer_thread != None:
+              if running_algorithm is not None:
                 cpuminer_thread.time_running=time() - cpuminer_thread.start_time
                 logline=running_algorithm + ' FOUND ' + str(cpuminer_thread.shares_found) +' shares after ' + '{:6.3f}'.format(time() - cpuminer_thread.start_time) + ' s '
                 if cpuminer_thread.shares_found == 0:
-                    if (WAITTIME - ( time() - cpuminer_thread.start_time ) ) > 0:
-                        logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
-                    else:
-                        logline='.. DISABLING (temporary) '  + logline + ' .. REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
-                        payrates[running_algorithm] = 0
-                        # kill previous miner
-                        cpuminer_thread.join()
-                        logging.info('killed process running ' + running_algorithm)
-                        running_algorithm = None
-
+                    logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline) 
                 if (np.sum(cpuminer_thread.nof_hashes) > 0) :
@@ -331,12 +311,10 @@ def main():
                     longloginfo= expectinfo + loginfo
                     logging.info(longloginfo)
 
-        if cpuminer_thread != None and running_algorithm != None:
-            printHashRateAndPayRate()
-            sleep(UPDATE_INTERVAL / 2)
-        if cpuminer_thread != None and running_algorithm != None:
-            printHashRateAndPayRate()
-            sleep(UPDATE_INTERVAL / 2)
+        printHashRateAndPayRate()
+        sleep(UPDATE_INTERVAL / 2)
+        printHashRateAndPayRate()
+        sleep(UPDATE_INTERVAL / 2)
 
 if __name__ == '__main__':
 
