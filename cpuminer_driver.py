@@ -276,7 +276,9 @@ def main():
                     cpuminer_thread.join()
                     logging.info('killswitch-killed process running ' + running_algorithm)
                     #running_algorithm=None
+                    cpuminer_thread = None
                     killswitch='no'
+                    profitinfo()
             if cpuminer_thread == None:
                 # start miner
                 cpucount=benchmarks[best_algorithm]['nof_threads']
