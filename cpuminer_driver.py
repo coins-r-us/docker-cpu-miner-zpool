@@ -278,23 +278,23 @@ def main():
                 if cpuminer_thread != None:
                     cpuminer_thread.join()
                     logging.info('killed process running ' + running_algorithm)
+                    running_algorithm=None
                     killswitch='no'
-            if killswitch != 'engaged':
-                if cpuminer_thread == None:
-                    # start miner
-                    cpucount=benchmarks[best_algorithm]['nof_threads']
-                    if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
-                        cpucount=int(MAXTHREADS)
-                    logging.info('starting mining using ' + best_algorithm + ' using ' + str(cpucount) + ' threads')
-                    #cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET , '-p', WORKER + ',c=BTC',
-                    logging.info(['cpuminer', '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
-                        '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                        '-a', best_algorithm, '-t', str(cpucount)])
-                    cpuminer_thread = MinerThread(['cpuminer', '-u', WALLET , '-p', WORKER + ',c=' + PAYMETH,
-                        '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                        '-a', best_algorithm, '-t', str(cpucount)], cpucount)
-                    cpuminer_thread.start()
-                    running_algorithm = best_algorithm
+            if cpuminer_thread == None:
+                # start miner
+                cpucount=benchmarks[best_algorithm]['nof_threads']
+                if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
+                    cpucount=int(MAXTHREADS)
+                logging.info('starting mining using ' + best_algorithm + ' using ' + str(cpucount) + ' threads')
+                #cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET , '-p', WORKER + ',c=BTC',
+                logging.info(['cpuminer', '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
+                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
+                    '-a', best_algorithm, '-t', str(cpucount)])
+                cpuminer_thread = MinerThread(['cpuminer', '-u', WALLET , '-p', WORKER + ',c=' + PAYMETH,
+                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
+                    '-a', best_algorithm, '-t', str(cpucount)], cpucount)
+                cpuminer_thread.start()
+                running_algorithm = best_algorithm
 
         def printHashRateAndPayRate():
             if cpuminer_thread != None:
