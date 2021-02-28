@@ -312,7 +312,7 @@ def main():
                     if (WAITTIME - ( time() - cpuminer_thread.start_time ) ) > 0:
                         logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                     else:
-                        logline=logline + '.. DISABLING (temporary) REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                        logline='.. DISABLING (temporary) '  + logline + ' .. REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
                         #cpuminer_thread.join()
                         payrates[running_algorithm] = 0
 
