@@ -308,7 +308,11 @@ def main():
                 cpuminer_thread.time_running=time() - cpuminer_thread.start_time
                 logline=running_algorithm + ' FOUND ' + str(cpuminer_thread.shares_found) +' shares after ' + '{:6.3f}'.format(time() - cpuminer_thread.start_time) + ' s '
                 if cpuminer_thread.shares_found == 0:
-                    logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                    if (WAITTIME - ( time() - cpuminer_thread.start_time ) ) > 0:
+                        logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                    else:
+                        logline=logline + '.. DISABLING (temporary) REASON: no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                        cpuminer_thread.join()
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline) 
                 if (np.sum(cpuminer_thread.nof_hashes) > 0) :
@@ -320,10 +324,11 @@ def main():
                     longloginfo= expectinfo + loginfo
                     logging.info(longloginfo)
 
-        printHashRateAndPayRate()
-        sleep(UPDATE_INTERVAL / 2)
-        printHashRateAndPayRate()
-        sleep(UPDATE_INTERVAL / 2)
+        if cpuminer_thread != None:
+            printHashRateAndPayRate()
+            sleep(UPDATE_INTERVAL / 2)
+            printHashRateAndPayRate()
+            sleep(UPDATE_INTERVAL / 2)
 
 if __name__ == '__main__':
 
