@@ -316,8 +316,9 @@ def main():
 
         printHashRateAndPayRate()
         sleep(UPDATE_INTERVAL / 2)
-        printHashRateAndPayRate()
-        sleep(UPDATE_INTERVAL / 2)
+        if cpuminer_thread.shares_found != 0:
+            printHashRateAndPayRate()
+            sleep(UPDATE_INTERVAL / 2)
 
 if __name__ == '__main__':
 
