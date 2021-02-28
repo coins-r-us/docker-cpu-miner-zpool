@@ -29,14 +29,20 @@ def run(nicehash_algorithms):
 
 	benchmarked_algorithms = {}
 	max_nof_threads = multiprocessing.cpu_count()
+	min_threads=1
+	if multiprocessing.cpu_count() > 1:
+		min_threads=2
 	benchmark_str = 'Benchmark: '
 	for algorithm in nicehash_algorithms:
 	    if algorithm in miner_algorithms:
-	        bash_command = './cpuminer --benchmark --time-limit=13 -a ' + algorithm
+#	        bash_command = './cpuminer --benchmark --time-limit=13 -a ' + algorithm
+	        bash_command = 'cpuminer --benchmark --time-limit=13 -a ' + algorithm
 	        optimal_nof_threads = 0
 	        optimal_hash_rate = 0
 	        logging.info('Benchmarking ' + algorithm + ' ...')
-	        for t in range(1, max_nof_threads + 1):
+#	        for t in range(1, max_nof_threads + 1):
+##only benchmark from 1/2(see min_threads) -> (ncores-1)
+	        for t in range(min_threads, max_nof_threads ):
 	            logging.info('with ' + str(t) + ' thread(s)')
 	            output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
 	            output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
@@ -51,6 +57,8 @@ def run(nicehash_algorithms):
 	                'nof_threads' : optimal_nof_threads
 	            }
 	            logging.info('Benchmarked ' + algorithm + ' with selected parameters: ' + str(benchmarked_algorithms[algorithm]))
+	            json.dump(benchmarked_algorithms, open(cpuminer_driver.BENCHMARKS_FILE, 'w'))
+
 	        else:
 	            logging.info('algorithm ' + algorithm + ' not added because the hash rate was 0.')
 

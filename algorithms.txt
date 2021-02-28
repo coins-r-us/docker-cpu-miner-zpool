@@ -1,68 +1,49 @@
-argon2
-axiom        Shabal-256 MemoHash
-bastion
-blake        Blake-256 (SFR)
-blakecoin    blake256r8
-blake2s      Blake-2 S
-bmw          BMW 256
-c11          Chaincoin
-cryptolight  Cryptonight-light
-cryptonight  cryptonote, Monero (XMR)
-decred
-deep         Deepcoin (DCN)
+axiom        Shabal-256 MemoHash                                                                                                                                                                                    
+bitcore      Timetravel with 10 algos                                                                                                                                                                               
+blake        Blake-256 14-rounds (SFR)                                                                                                                                                                              
+blakecoin    Blake-256 single sha256 merkle                                                                                                                                                                         
+blake2s      Blake2-S (256)                                                                                                                                                                                         
+bmw          BMW 256                                                                                                                                                                                                
+c11/flax     C11                                                                                                                                                                                                    
+cryptolight  Cryptonight-light                                                                                                                                                                                      
+cryptonight  Monero
+decred       Blake-256 14-rounds 180 bytes
 dmd-gr       Diamond-Groestl
 drop         Dropcoin
 fresh        Fresh
-groestl      Groestl coin
+groestl      GroestlCoin
 heavy        Heavy
-hmq1725      Espers
-hodl         Hodlcoin
-jha          Jackpotcoin
-keccak       Maxcoin
-keccakc      Creative coin
-lbry         LBC, LBRY Credits
+jha          JHA
+keccak       Keccak
 luffa        Luffa
-lyra2h       Hppcoin
-lyra2re      lyra2
-lyra2rev2    lyra2v2, Vertcoin
-lyra2z       Zcoin (XZC)
-lyra2z330    Lyra2 330 rows, Zoin (ZOI)
-m7m          Magi (XMG)
+lyra2re      Lyra2RE
+lyra2rev2    Lyra2REv2 (Vertcoin) 
 myr-gr       Myriad-Groestl
-neoscrypt    NeoScrypt(128, 2, 1)
+neoscrypt    NeoScrypt(128, 2, 1) 
 nist5        Nist5
-pentablake   Pentablake
-phi1612      phi, LUX coin
 pluck        Pluck:128 (Supcoin)
-polytimos    Ninja
+pentablake   Pentablake
 quark        Quark
 qubit        Qubit
 scrypt       scrypt(1024, 1, 1) (default)
 scrypt:N     scrypt(N, 1, 1)
-scryptjane:nf
-sha256d      Double SHA-256
-sha256t      Triple SHA-256, Onecoin (OC)
+scrypt-jane:N (with N factor from 4 to 30)
 shavite3     Shavite3
+sha256d      SHA-256d
+sia          Blake2-B
+sib          X11 + gost (SibCoin) 
 skein        Skein+Sha (Skeincoin)
 skein2       Double Skein (Woodcoin)
-skunk        Signatum (SIGT)
-timetravel   Machinecoin (MAC)
-timetravel10 Bitcore
-tribus       Denarius (DNR)
-vanilla      blake256r8vnl (VCash)
-veltor       (VLT)
-whirlpool
-whirlpoolx
-x11          Dash
-x11evo       Revolvercoin
-x11gost      sib (SibCoin)
+s3           S3
+timetravel   Timetravel (Machinecoin)
+vanilla      Blake-256 8-rounds
+x11evo       Permuted x11
+x11          X11
 x13          X13
-x13sm3       hsr (Hshare)
 x14          X14
 x15          X15
-x17
-xevan        Bitsend
-yescrypt     Globalboost-Y (BSTY)
-yescryptr8   BitZeny (ZNY)\n\
-yescryptr16  Yenten (YTN)
-zr5
+x17          X17
+xevan        Xevan (BitSend)
+yescrypt     Yescrypt
+zr5          ZR5
+
