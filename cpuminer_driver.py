@@ -331,10 +331,10 @@ def main():
                     longloginfo= expectinfo + loginfo
                     logging.info(longloginfo)
 
-        if cpuminer_thread != None:
+        if cpuminer_thread != None and running_algorithm != None:
             printHashRateAndPayRate()
             sleep(UPDATE_INTERVAL / 2)
-        if cpuminer_thread != None:
+        if cpuminer_thread != None and running_algorithm != None:
             printHashRateAndPayRate()
             sleep(UPDATE_INTERVAL / 2)
 
