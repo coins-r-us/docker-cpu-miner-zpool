@@ -278,6 +278,11 @@ def main():
                     #running_algorithm=None
                     cpuminer_thread = None
                     profitinfo()
+
+### boot thread
+            #re-Calculate rates
+            payrates = nicehash_mbtc_per_day(benchmarks, paying)
+            best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             if cpuminer_thread == None or killswitch == 'engaged':
                 # start miner
                 cpucount=benchmarks[best_algorithm]['nof_threads']
