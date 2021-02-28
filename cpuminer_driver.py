@@ -277,9 +277,8 @@ def main():
                     logging.info('killswitch-killed process running ' + running_algorithm)
                     #running_algorithm=None
                     cpuminer_thread = None
-                    killswitch='no'
                     profitinfo()
-            if cpuminer_thread == None:
+            if cpuminer_thread == None or killswitch == 'engaged':
                 # start miner
                 cpucount=benchmarks[best_algorithm]['nof_threads']
                 if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
@@ -294,6 +293,7 @@ def main():
                     '-a', best_algorithm, '-t', str(cpucount)], cpucount)
                 cpuminer_thread.start()
                 running_algorithm = best_algorithm
+                killswitch='no'
 
         def printHashRateAndPayRate():
             if cpuminer_thread != None:
