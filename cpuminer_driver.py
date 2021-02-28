@@ -251,6 +251,10 @@ def main():
                 payrates[running_algorithm] = 0
                 killswitch='engaged'
                 profitinfo()
+                # kill previous miner
+                if cpuminer_thread != None:
+                    cpuminer_thread.join()
+                    logging.info('killed process running ' + running_algorithm)
 
         # Compute payout and get best algorithm
         payrates = nicehash_mbtc_per_day(benchmarks, paying)
