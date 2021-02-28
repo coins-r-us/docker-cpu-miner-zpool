@@ -249,7 +249,7 @@ def main():
                 json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                 logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING' )
                 payrates[running_algorithm] = 0
-                killswtich='engaged'
+                killswitch='engaged'
                 profitinfo()
 
         # Compute payout and get best algorithm
