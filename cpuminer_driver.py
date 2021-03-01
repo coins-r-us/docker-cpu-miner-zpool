@@ -278,12 +278,12 @@ def main():
                     #profitinfo()
                 else:
                     if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
-                        payrateswitch=1
-                        killswitch='engaged'
+                        payrateswitch=True
                         logging.info("switching due to profitability")
+                        killswitch='engaged'
                         profitinfo()
             if algoswitch == True or payrateswitch == True:
-                killswtich='engaged'
+                killswitch='engaged'
             if  killswitch == 'engaged':
                 # kill previous miner
                 if cpuminer_thread != None:
@@ -302,7 +302,7 @@ def main():
             for key, value in sorted(dict(payrates).items(), key=lambda x: x[1], reverse=False):
                 if(value > best_rate):
                     best_algo_aux=key
-            logging.info('best_algo (payrates):' + best_algorithm + 'best_algo aux:' + best_algo_aux )
+            logging.info('best_algo (payrates): ' + best_algorithm + ' | best_algo aux: ' + best_algo_aux )
             if cpuminer_thread == None or killswitch == 'engaged':
                 profitinfo()
                 # start miner
