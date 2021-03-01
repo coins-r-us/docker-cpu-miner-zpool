@@ -302,7 +302,7 @@ def main():
             for key, value in sorted(dict(payrates).items(), key=lambda x: x[1], reverse=False):
                 if(value > best_rate):
                     best_algo_aux=key
-            logging.info('best_algo (payrates): ' + best_algorithm + ' | best_algo aux: ' + best_algo_aux )
+            logging.info('best_algo (payrates): ' + str(best_algorithm) + ' | best_algo aux: ' + str(best_algo_aux) )
             if cpuminer_thread == None or killswitch == 'engaged':
                 profitinfo()
                 # start miner
