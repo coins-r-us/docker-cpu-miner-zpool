@@ -279,6 +279,7 @@ def main():
                 else:
                     if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
                         payrateswitch=1
+                        killswitch='engaged'
                         logging.info("switching due to profitability")
                         profitinfo()
             if algoswitch == True or payrateswitch == True:
@@ -296,6 +297,12 @@ def main():
             #re-Calculate rates
             payrates = nicehash_mbtc_per_day(benchmarks, paying)
             best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
+            best_rate=0
+            best_algo_aux=None
+            for key, value in sorted(dict(payrates).items(), key=lambda x: x[1], reverse=False):
+                if(value > best_rate):
+                    best_algo_aux=key
+            logging.info('best_algo (payrates):' + best_algorithm + 'best_algo aux:' + best_algo_aux )
             if cpuminer_thread == None or killswitch == 'engaged':
                 profitinfo()
                 # start miner
