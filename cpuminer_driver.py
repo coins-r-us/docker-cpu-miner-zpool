@@ -197,6 +197,7 @@ def main():
 
     # load benchmarks
     benchmarks = json.load(open(BENCHMARKS_FILE))
+    RESTORETIME=WAITTIME * len(benchmarks)
 
     running_algorithm = None
     cpuminer_thread = None
@@ -225,6 +226,7 @@ def main():
 
 
     while True:
+        RESTORETIME=WAITTIME * len(benchmarks)
         try:
             paying, ports = nicehash_multialgo_info()
 
