@@ -30,9 +30,9 @@ def run(nicehash_algorithms):
 	benchmarked_algorithms = {}
 	max_nof_threads = multiprocessing.cpu_count()
 	min_threads=1
-	min_threads=int(multiprocessing.cpu_count())
 	if multiprocessing.cpu_count() > 1:
 		min_threads=2
+	min_threads=int(multiprocessing.cpu_count()/2)
 	benchmark_str = 'Benchmark: '
 	for algorithm in nicehash_algorithms:
 	    if algorithm in miner_algorithms:
