@@ -262,7 +262,7 @@ def main():
                     payrates[running_algorithm] = 0
                     benchmarks[running_algorithm]['last_fail_time'] = time()
                     json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
-                    logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING FOR' + int(RESTORETIME) + ' seconds' )
+                    logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING FOR' + str(RESTORETIME) + ' seconds' )
 
             killswitch='no'
             algoswitch=False
