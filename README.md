@@ -29,8 +29,10 @@ configure which wallet to mine to and to set the worker name that will be passed
   `mkdir /etc/zpool_host_files`
 * pull , tag , add  to registry and deploy (update  this way as well ):
   ```
+  docker pull registry-1.docker.io/coinsrus/docker-cpu-miner-zpool:latest;
+  docker tag  registry-1.docker.io/coinsrus/docker-cpu-miner-zpool:latest 192.168.111.1:5000/docker-cpu-miner-zpool;
   docker pull coinsrus/docker-cpu-miner-zpool:latest;
-  docker tag coinsrus/docker-cpu-miner-zpool:latest 192.168.111.1:5000/docker-cpu-miner-zpool;
+  docker tag coinsrus/docker-cpu-miner-zpool:latest
   docker push 192.168.111.1:5000/docker-cpu-miner-zpool;
   docker service create  --name zpool_multi --replicas 3 --dns 9.9.9.9 --dns 1.1.1.1 --mount type=bind,src=/etc/zpool_host_files,dst=/host_files/  -e WALLET=MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg -e WAITTIME=180 -e MAXTHREADS=2 192.168.111.1:5000/docker-cpu-miner-zpool
 ```
