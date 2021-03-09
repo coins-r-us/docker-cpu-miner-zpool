@@ -337,7 +337,7 @@ def main():
                     hash_rate = np.sum(cpuminer_thread.hash_sum / cpuminer_thread.nof_hashes)
                     #logging.info('Current average hashrate is %f H/s' % hash_rate)
                     current_payrate = compute_revenue(paying[running_algorithm], hash_rate)
-                    loginfo='at avg. cur. hashreate of ' + '{:.3f}'.format(hash_rate) + ' H/s'
+                    loginfo='at avg. cur. hashrate of ' + '{:.3f}'.format(hash_rate) + ' H/s'
                     expectinfo= running_algorithm + ' is currently expected to generate %f mBTC/day or %f mBTC/month '   % (current_payrate, current_payrate * 365.25 / 12 )
                     longloginfo= expectinfo + loginfo
                     logging.info(longloginfo)
