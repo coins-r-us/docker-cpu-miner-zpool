@@ -241,7 +241,7 @@ def main():
         else:
             # Compute payout and get best algorithm
             payrates = nicehash_mbtc_per_day(benchmarks, paying)
-            ESTORETIME=WAITTIME * len(payrates)
+            RESTORETIME=WAITTIME * len(payrates)
 
             best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             if cpuminer_thread != None:
