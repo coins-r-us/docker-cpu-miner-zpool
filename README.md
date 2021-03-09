@@ -15,8 +15,13 @@ You can use thefollowing environment variables:
 configure which wallet to mine to and to set the worker name that will be passed along. Use the '-v' to point the container to a folder where the benchmark results can be stored, for example the current folder.
 
 
-### 1: simple (single machine) example
-`docker run --restart unless-stopped -v $(pwd)/host_files:/host_files/ --rm -it -e WALLET=MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg -e WAITTIME=180 -e MAXTHREADS=2  -e WORKERNAME=worker1 -e PAYMETH=LTC -v $(pwd):/host_files/ coinsrus/docker-cpu-miner-zpool`
+### 1.1: simple (single machine) example ( foreground)
+`docker run -v $(pwd)/host_files:/host_files/ --rm -it -e WALLET=MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg -e WAITTIME=180 -e MAXTHREADS=2  -e WORKERNAME=worker1 -e PAYMETH=LTC -v $(pwd):/host_files/ coinsrus/docker-cpu-miner-zpool`
+
+### 1.2: simple (single machine) example ( background)
+`docker run --restart unless-stopped -v $(pwd)/host_files:/host_files/ --rm -t -d -e WALLET=MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg -e WAITTIME=180 -e MAXTHREADS=2  -e WORKERNAME=worker1 -e PAYMETH=LTC -v $(pwd):/host_files/ coinsrus/docker-cpu-miner-zpool`
+
+
 
 ## 2: docker swarm example( private registry )
 * create a benchmark folder on each host:

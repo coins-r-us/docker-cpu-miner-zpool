@@ -328,6 +328,9 @@ def main():
                 logline=running_algorithm + ' FOUND ' + str(cpuminer_thread.shares_found) +' shares after ' + '{:6.3f}'.format(time() - cpuminer_thread.start_time) + ' s '
                 if cpuminer_thread.shares_found == 0:
                     logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                    if (WAITTIME - ( time() - cpuminer_thread.start_time ) ) < 1 :
+                        logline=logline + ' -> Killing from payrate calc'
+                        cpuminer_thread.join()
                 if cpuminer_thread.time_running > 1:
                     logging.info(logline)
                 if (np.sum(cpuminer_thread.nof_hashes) > 0) :
