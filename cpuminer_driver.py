@@ -25,10 +25,6 @@ import threading
 import numpy as np
 
 
-## time after a failed algo is re-considered
-RESTORETIME=3600
-
-
 WALLET = 'MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg'
 PAYMETH = 'LTC'
 WORKER = 'worker1'
@@ -49,6 +45,8 @@ NOF_HASHES_BEFORE_UPDATE = 10000
 EXCAVATOR_TIMEOUT = 10
 NICEHASH_TIMEOUT = 20
 
+## time after a failed algo is re-considered (should be n(algos)*WAITTIME + 1   )
+RESTORETIME=3600
 
 class MinerThread(threading.Thread):
     def __init__(self, cmd, nof_threads):
@@ -164,6 +162,7 @@ def nicehash_mbtc_per_day(benchmarks, paying):
     revenue = {}
     for algorithm in benchmarks:
         # ignore revenue if the algorithm fails a lot
+        RESTORETIME=WAITTIME * benchmarks.len() 
         if 'last_fail_time' in benchmarks[algorithm] and time() - benchmarks[algorithm]['last_fail_time'] < RESTORETIME:
             revenue[algorithm] = 0
             continue
