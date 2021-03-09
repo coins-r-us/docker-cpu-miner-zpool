@@ -30,13 +30,14 @@ def run(nicehash_algorithms):
 	benchmarked_algorithms = {}
 	max_nof_threads = multiprocessing.cpu_count()
 	min_threads=1
+	min_threads=int(multiprocessing.cpu_count())
 	if multiprocessing.cpu_count() > 1:
 		min_threads=2
 	benchmark_str = 'Benchmark: '
 	for algorithm in nicehash_algorithms:
 	    if algorithm in miner_algorithms:
 #	        bash_command = './cpuminer --benchmark --time-limit=13 -a ' + algorithm
-	        bash_command = 'cpuminer --benchmark --time-limit=13 -a ' + algorithm
+	        bash_command = 'cpuminer --benchmark --time-limit=42 -a ' + algorithm
 	        optimal_nof_threads = 0
 	        optimal_hash_rate = 0
 	        logging.info('Benchmarking ' + algorithm + ' ...')
