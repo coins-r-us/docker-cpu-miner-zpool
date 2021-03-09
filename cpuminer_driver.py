@@ -162,7 +162,7 @@ def nicehash_mbtc_per_day(benchmarks, paying):
     revenue = {}
     for algorithm in benchmarks:
         # ignore revenue if the algorithm fails a lot
-        RESTORETIME=WAITTIME * benchmarks.len()
+        RESTORETIME=WAITTIME * len(benchmarks)
         logging.info('set restoretime to ' + str(RESTORETIME) )
         if 'last_fail_time' in benchmarks[algorithm] and time() - benchmarks[algorithm]['last_fail_time'] < RESTORETIME:
             revenue[algorithm] = 0
