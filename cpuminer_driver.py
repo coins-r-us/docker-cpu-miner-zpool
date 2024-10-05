@@ -96,9 +96,9 @@ class MinerThread(threading.Thread):
                 ## only first cpu (spam)
                 if 'CPU #' in line:
                     if 'CPU #0' in line:
-						laststring="never"
-						if self.last_share != 0:
-							laststring=str(int(time()-self.last_share)) + ' s ago '
+                        laststring="never"
+                        if self.last_share != 0:
+                            laststring=str(int(time()-self.last_share)) + ' s ago '
                         logging.info(str( line[ : line.rfind('\n') ]) + '\trunning since: ' + '{:.3f}'.format(self.time_running) + 's\t| shares found: ' + str(self.shares_found) + '\t| last: ' + laststring )
                 else:
                     logging.info(line[ : line.rfind('\n')])
