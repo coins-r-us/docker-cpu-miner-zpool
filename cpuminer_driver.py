@@ -29,7 +29,7 @@ import numpy as np
 WALLET  =  os.environ.get('WALLET',  'XoVozBiwEveoLk87JAZHHR3bX1TzH2geVs') 
 WORKER  =  os.environ.get('WORKER',  'worker1') 
 PAYMETH =  os.environ.get('PAYMETH', 'DASH') 
-WAITTIME = os.environ.get('WAITTIME', 240)
+WAITTIME = int(os.environ.get('WAITTIME', 240))
 
 REGION = os.environ.get('REGION', 'eu')  # eu, usa, hk, jp, in, br
 BENCHMARKS_FILE = '/host_files/benchmarks.json'
@@ -359,18 +359,18 @@ if __name__ == '__main__':
     print( ' have ' + str(len(sys.argv))  +  ' arguments :'  )
     print(sys.argv)
     if len(sys.argv) > 0:
-        #WALLET = sys.argv[0]
+        WALLET = sys.argv[0]
         os.environ['WALLET'] = str(sys.argv[0])
     if len(sys.argv) > 1:
-        #WORKER = sys.argv[1]
+        WORKER = sys.argv[1]
         os.environ['WORKER'] = str(sys.argv[1])
     if len(sys.argv) > 2:
-        #PAYMETH = sys.argv[2]
+        PAYMETH = sys.argv[2]
         os.environ['PAYMETH'] = str(sys.argv[2])
     if len(sys.argv) > 3:
-        #MAXTHREADS = sys.argv[3]
+        MAXTHREADS = sys.argv[3]
         os.environ['MAXTHREADS'] = str(sys.argv[3])
     if len(sys.argv) > 4:
-        #WAITTIME = int(sys.argv[4])
+        WAITTIME = int(sys.argv[4])
         os.environ['WAITTIME'] = str(sys.argv[4])
     main()
