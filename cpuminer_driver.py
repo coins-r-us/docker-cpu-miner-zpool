@@ -390,11 +390,11 @@ if __name__ == '__main__':
         WALLET = sys.argv[0]
         os.environ['WALLET'] = str(sys.argv[0])
     if len(sys.argv) > 1:
-        WORKER = sys.argv[1]
-        os.environ['WORKER'] = str(sys.argv[1])
+        PAYMETH = sys.argv[1]
+        os.environ['PAYMETH'] = str(sys.argv[1])
     if len(sys.argv) > 2:
-        PAYMETH = sys.argv[2]
-        os.environ['PAYMETH'] = str(sys.argv[2])
+        WORKER = sys.argv[2]
+        os.environ['WORKER'] = str(sys.argv[2])
     if len(sys.argv) > 3:
         MAXTHREADS = sys.argv[3]
         os.environ['MAXTHREADS'] = str(sys.argv[3])

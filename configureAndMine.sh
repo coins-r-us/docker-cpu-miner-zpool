@@ -15,5 +15,5 @@ echo "WAITTIME: ${WAITTIME}"
 
 while (true);do 
 
-/bin/bash -c "timeout -t 7200 python3 cpuminer_driver.py $WALLET $WORKERNAME $PAYMETH $MAXTHREADS $WAITTIME"
+/bin/bash -c "timeout -t 7200 python3 cpuminer_driver.py $WALLET $PAYMETH $WORKERNAME $MAXTHREADS $WAITTIME"
 done
