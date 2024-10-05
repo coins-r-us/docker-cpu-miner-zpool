@@ -20,21 +20,23 @@ import urllib.error
 import urllib.request
 from time import sleep, time
 import os.path
+import os.environ
 import subprocess
 import threading
 import numpy as np
 
 
-WALLET = 'MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg'
-PAYMETH = 'LTC'
-WORKER = 'worker1'
-WAITTIME = 120
-REGION = 'eu' # eu, usa, hk, jp, in, br
+WALLET  =  os.environ.get('WALLET',  'XoVozBiwEveoLk87JAZHHR3bX1TzH2geVs') 
+WORKER  =  os.environ.get('WORKER',  'worker1') 
+PAYMETH =  os.environ.get('PAYMETH', 'DASH') 
+WAITTIME = os.environ.get('WAITTIME', 240)
+
+REGION = os.environ.get('REGION', 'eu')  # eu, usa, hk, jp, in, br
 BENCHMARKS_FILE = '/host_files/benchmarks.json'
 MAXTHREADS=999
 
 PROFIT_SWITCH_THRESHOLD = 0.01
-UPDATE_INTERVAL = 45
+UPDATE_INTERVAL = 42
 
 # artificailly increase profit if it hasn't been updated ever or in the past 24h
 PROFIT_INCREASE_TIME = 24 * 60 * 60    # s
@@ -46,7 +48,7 @@ EXCAVATOR_TIMEOUT = 10
 NICEHASH_TIMEOUT = 20
 
 ## time after a failed algo is re-considered (should be n(algos)*WAITTIME + 1   )
-RESTORETIME=3600
+RESTORETIME=4200
 
 class MinerThread(threading.Thread):
     def __init__(self, cmd, nof_threads):
@@ -162,7 +164,7 @@ def nicehash_mbtc_per_day(benchmarks, paying):
     revenue = {}
     for algorithm in benchmarks:
         # ignore revenue if the algorithm fails a lot
-        RESTORETIME=WAITTIME * len(benchmarks)
+        RESTORETIME=int(WAITTIME) * len(benchmarks)
         """logging.info('set restoretime to ' + str(RESTORETIME) )"""
         if 'last_fail_time' in benchmarks[algorithm] and time() - benchmarks[algorithm]['last_fail_time'] < RESTORETIME:
             revenue[algorithm] = 0
@@ -197,7 +199,7 @@ def main():
 
     # load benchmarks
     benchmarks = json.load(open(BENCHMARKS_FILE))
-    RESTORETIME=WAITTIME * len(benchmarks)
+    RESTORETIME=int(WAITTIME) * len(benchmarks)
 
     running_algorithm = None
     cpuminer_thread = None
@@ -241,7 +243,7 @@ def main():
         else:
             # Compute payout and get best algorithm
             payrates = nicehash_mbtc_per_day(benchmarks, paying)
-            RESTORETIME=WAITTIME * len(payrates)
+            RESTORETIME=int(WAITTIME) * len(payrates)
 
             best_algorithm = max(payrates.keys(), key=lambda algo: payrates[algo])
             if cpuminer_thread != None:
@@ -357,13 +359,18 @@ if __name__ == '__main__':
     print( ' have ' + str(len(sys.argv))  +  ' arguments :'  )
     print(sys.argv)
     if len(sys.argv) > 0:
-        WALLET = sys.argv[0]
+        #WALLET = sys.argv[0]
+        os.environ['WALLET'] = str(sys.argv[0])
     if len(sys.argv) > 1:
-        WORKER = sys.argv[1]
+        #WORKER = sys.argv[1]
+        os.environ['WORKER'] = str(sys.argv[1])
     if len(sys.argv) > 2:
-        PAYMETH = sys.argv[2]
+        #PAYMETH = sys.argv[2]
+        os.environ['PAYMETH'] = str(sys.argv[2])
     if len(sys.argv) > 3:
-        MAXTHREADS = sys.argv[3]
+        #MAXTHREADS = sys.argv[3]
+        os.environ['MAXTHREADS'] = str(sys.argv[3])
     if len(sys.argv) > 4:
-        WAITTIME = int(sys.argv[4])
+        #WAITTIME = int(sys.argv[4])
+        os.environ['WAITTIME'] = str(sys.argv[4])
     main()
