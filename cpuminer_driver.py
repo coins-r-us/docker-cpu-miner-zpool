@@ -20,7 +20,7 @@ import urllib.error
 import urllib.request
 from time import sleep, time
 import os.path
-import os.environ
+import os
 import subprocess
 import threading
 import numpy as np
