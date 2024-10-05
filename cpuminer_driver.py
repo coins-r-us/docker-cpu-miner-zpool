@@ -20,11 +20,23 @@ import urllib.error
 import urllib.request
 from time import sleep, time
 import os.path
-import os
+import os, errno
 import subprocess
 import threading
 import numpy as np
 
+
+STOREDIR=os.environ.get('HOME', '/etc')+ "/.zpool"
+if os.geteuid() != 0:
+    STOREDIR=os.environ.get('HOME', '/tmp')+ "/.zpool"
+else:
+    STOREDIR="/etc/.zpool"
+try:
+    os.makedirs(STOREDIR)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        print("could not create config dir")
+        raise
 
 WALLET  =  os.environ.get('WALLET',  'XoVozBiwEveoLk87JAZHHR3bX1TzH2geVs') 
 WORKER  =  os.environ.get('WORKER',  'worker1') 
@@ -32,7 +44,7 @@ PAYMETH =  os.environ.get('PAYMETH', 'DASH')
 WAITTIME = int(os.environ.get('WAITTIME', 240))
 
 REGION = os.environ.get('REGION', 'eu')  # eu, usa, hk, jp, in, br
-BENCHMARKS_FILE = '/host_files/benchmarks.json'
+BENCHMARKS_FILE = STOREDIR+'/benchmarks.json'
 MAXTHREADS=999
 
 PROFIT_SWITCH_THRESHOLD = 0.01
@@ -48,7 +60,7 @@ EXCAVATOR_TIMEOUT = 10
 NICEHASH_TIMEOUT = 20
 
 ## time after a failed algo is re-considered (should be n(algos)*WAITTIME + 1   )
-RESTORETIME=4200
+RESTORETIME=2350
 
 class MinerThread(threading.Thread):
     def __init__(self, cmd, nof_threads):
@@ -61,6 +73,7 @@ class MinerThread(threading.Thread):
         self.start_time = time()
         self.time_running=0
         self.shares_found=0
+        self.last_share=0
 
         self.process = None
         threading.Thread.__init__(self)
@@ -74,11 +87,19 @@ class MinerThread(threading.Thread):
                 self.time_running= time() - self.start_time
                 if 'yay' in line:
                     self.shares_found  = self.shares_found + 1
+                    self.last_share=time()
                 if 'yes!' in line:
+                    self.last_share=time()
                     self.shares_found  = self.shares_found + 1
                ##log but show share time and count after cpu line
+                #if 'CPU #' in line:
+                ## only first cpu (spam)
                 if 'CPU #' in line:
-                    logging.info(str( line[ : line.rfind('\n') ]) + '\trunning since: ' + '{:.3f}'.format(self.time_running) + 's\t| shares found: ' + str(self.shares_found) )
+                    if 'CPU #0' in line:
+						laststring="never"
+						if self.last_share != 0:
+							laststring=str(int(time()-self.last_share)) + ' s ago '
+                        logging.info(str( line[ : line.rfind('\n') ]) + '\trunning since: ' + '{:.3f}'.format(self.time_running) + 's\t| shares found: ' + str(self.shares_found) + '\t| last: ' + laststring )
                 else:
                     logging.info(line[ : line.rfind('\n')])
 
@@ -192,6 +213,7 @@ def main():
                         level=logging.INFO)
 
     # benchmark if necessary
+    print("loading "+BENCHMARKS_FILE)
     if not os.path.isfile(BENCHMARKS_FILE):
         import benchmark
         paying, ports = nicehash_multialgo_info()
@@ -262,7 +284,13 @@ def main():
                     logging.error(running_algorithm + ' FAILS MORE THAN ALLOWED SO IGNORING IT FOR NOW!')
             ### zero payrate if we get no shares for WAITTIME
                 #logging.info('checking ' + str(WAITTIME) + 'against' + cpuminer_thread.time_running + ' and sharecount ' + cpuminer_thread.shares_found
-                if cpuminer_thread.time_running > WAITTIME and cpuminer_thread.shares_found == 0:
+                reset_payrate=False
+                if cpuminer_thread.time_running > int(WAITTIME) and cpuminer_thread.shares_found == 0:
+                    reset_payrate=True
+                ## difficulty may change and we want to keep track when we find no further shares but found at least one
+                if cpuminer_thread.time_running > int(WAITTIME) and cpuminer_thread.shares_found > 0 and ( (time() - cpuminer_thread.last_share ) > (int(WAITTIME)* 1.1) ):
+                    reset_payrate=True
+                if reset_payrate:
                     payrates[running_algorithm] = 0
                     benchmarks[running_algorithm]['last_fail_time'] = time()
                     json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
@@ -283,7 +311,7 @@ def main():
                 else:
                     if payrates[best_algorithm]/payrates[running_algorithm] >= 1.0 + PROFIT_SWITCH_THRESHOLD:
                         payrateswitch=True
-                        logging.info("switching due to profitability")
+                        logging.info("switching due to profitability from "+running_algorithm+" to "+best_algorithm)
                         killswitch='engaged'
                         profitinfo()
             if algoswitch == True or payrateswitch == True:
@@ -331,8 +359,8 @@ def main():
                 cpuminer_thread.time_running=time() - cpuminer_thread.start_time
                 logline=running_algorithm + ' FOUND ' + str(cpuminer_thread.shares_found) +' shares after ' + '{:6.3f}'.format(time() - cpuminer_thread.start_time) + ' s '
                 if cpuminer_thread.shares_found == 0:
-                    logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(WAITTIME - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
-                    if (WAITTIME - ( time() - cpuminer_thread.start_time ) ) < 1 :
+                    logline=logline + '.. disabling(temporary) if no shares found within ' + '{:6.3f}'.format(int(WAITTIME) - ( time() - cpuminer_thread.start_time ) ) + ' sec ..'
+                    if (int(WAITTIME) - ( time() - cpuminer_thread.start_time ) ) < 1 :
                         logline=logline + ' -> Killing from payrate calc'
                         cpuminer_thread.join()
                 if cpuminer_thread.time_running > 1:

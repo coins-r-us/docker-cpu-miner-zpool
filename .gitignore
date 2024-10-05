@@ -1,2 +1,5 @@
 .idea
 *.iml
+venv
+__pycache__
+host_files
