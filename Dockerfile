@@ -41,7 +41,9 @@ RUN git clone https://github.com/JayDDee/cpuminer-opt/ /cpuminer-opt && cd /cpum
 RUN git clone https://github.com/tpruvot/cpuminer-multi.git /cpuminer  && cd /cpuminer && bash autogen.sh && ./configure --with-crypto --with-curl && bash c 'make -j $(nproc)'
 
 FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y libcurl3 libjansson4 python3 python3-numpy && 	rm -rf /var/lib/apt/lists/
 COPY --from=builder /cpuminer-opt/cpuminer /usr/bin/cpuminer-opt
+COPY --from=builder /cpuminer/cpuminer /usr/bin/cpuminer
 
 
 
