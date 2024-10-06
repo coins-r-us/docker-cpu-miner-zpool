@@ -212,13 +212,17 @@ def main():
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                         level=logging.INFO)
 
-    # benchmark if necessary
-    print("loading "+BENCHMARKS_FILE)
-    if not os.path.isfile(BENCHMARKS_FILE):
-        import benchmark
-        paying, ports = nicehash_multialgo_info()
-        benchmark.run(paying.keys())
-
+    ## benchmark if necessary
+    #print("loading "+BENCHMARKS_FILE)
+    #if not os.path.isfile(BENCHMARKS_FILE):
+    #    import benchmark
+    #    paying, ports = nicehash_multialgo_info()
+    #    benchmark.run(paying.keys())
+    ## ALWAYS BENCHMARK
+    import benchmark
+    paying, ports = nicehash_multialgo_info()
+    benchmark.run(paying.keys())
+    
     # load benchmarks
     benchmarks = json.load(open(BENCHMARKS_FILE))
     RESTORETIME=int(WAITTIME) * len(benchmarks)

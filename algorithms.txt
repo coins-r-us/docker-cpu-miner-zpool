@@ -1,49 +1,65 @@
-axiom        Shabal-256 MemoHash                                                                                                                                                                                    
-bitcore      Timetravel with 10 algos                                                                                                                                                                               
-blake        Blake-256 14-rounds (SFR)                                                                                                                                                                              
-blakecoin    Blake-256 single sha256 merkle                                                                                                                                                                         
-blake2s      Blake2-S (256)                                                                                                                                                                                         
-bmw          BMW 256                                                                                                                                                                                                
-c11/flax     C11                                                                                                                                                                                                    
-cryptolight  Cryptonight-light                                                                                                                                                                                      
+allium       Garlicoin double lyra2
+axiom        Shabal-256 MemoHash
+bitcore      Timetravel with 10 algos
+blake        Blake-256 14-rounds (SFR)
+blakecoin    Blake-256 single sha256 merkle
+blake2b      Blake2-B (512)
+blake2s      Blake2-S (256)
+bmw          BMW 256
+c11/flax     C11
+cryptolight  Cryptonight-light
 cryptonight  Monero
 decred       Blake-256 14-rounds 180 bytes
 dmd-gr       Diamond-Groestl
 drop         Dropcoin
 fresh        Fresh
+geek         GeekCash
 groestl      GroestlCoin
 heavy        Heavy
 jha          JHA
-keccak       Keccak
+keccak       Keccak (Old and deprecated)
+keccakc      Keccak (CreativeCoin)
 luffa        Luffa
 lyra2re      Lyra2RE
-lyra2rev2    Lyra2REv2 (Vertcoin) 
+lyra2rev2    Lyra2REv2
+lyra2v3      Lyra2REv3 (Vertcoin)
 myr-gr       Myriad-Groestl
-neoscrypt    NeoScrypt(128, 2, 1) 
+neoscrypt    NeoScrypt(128, 2, 1)
 nist5        Nist5
 pluck        Pluck:128 (Supcoin)
 pentablake   Pentablake
+phi          LUX initial algo
+phi2         LUX newer algo
 quark        Quark
 qubit        Qubit
+rainforest   RainForest (256)
 scrypt       scrypt(1024, 1, 1) (default)
 scrypt:N     scrypt(N, 1, 1)
 scrypt-jane:N (with N factor from 4 to 30)
 shavite3     Shavite3
 sha256d      SHA-256d
 sia          Blake2-B
-sib          X11 + gost (SibCoin) 
+sib          X11 + gost (SibCoin)
 skein        Skein+Sha (Skeincoin)
 skein2       Double Skein (Woodcoin)
-s3           S3
+sonoa        A series of 97 hashes from x17
+s3S3
 timetravel   Timetravel (Machinecoin)
 vanilla      Blake-256 8-rounds
 x11evo       Permuted x11
 x11          X11
+x12          X12
 x13          X13
 x14          X14
 x15          X15
+x16r         X16R
+x16rv2       X16Rv2 (Raven / Trivechain)
+x16s         X16S (Pigeon)
 x17          X17
+x20r         X20R
 xevan        Xevan (BitSend)
 yescrypt     Yescrypt
+yescryptr8   Yescrypt r8
+yescryptr16  Yescrypt r16
+yescryptr32  Yescrypt r32
 zr5          ZR5
-
