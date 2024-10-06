@@ -57,11 +57,12 @@ def run(nicehash_algorithms):
                 logging.info('with ' + str(t) + ' thread(s)')
                 try:
                     output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
+                    output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
+                    output = output[ : output.find('H/s')]
+                    hash_rate = cpuminer_driver._convert_to_float(output)
                 except:
                     output=""
-                output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
-                output = output[ : output.find('H/s')]
-                hash_rate = cpuminer_driver._convert_to_float(output)
+                    hash_rate=0
                 if hash_rate > optimal_hash_rate:
                     optimal_hash_rate = hash_rate
                     optimal_nof_threads = t
