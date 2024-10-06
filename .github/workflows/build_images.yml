@@ -86,16 +86,16 @@ jobs:
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=registry,ref=${{ steps.prep.outputs.docker_image }}:buildcache
           cache-to:   type=registry,ref=${{ steps.prep.outputs.docker_image }}:buildcache,mode=max
-      - name: Sleep for few seconds
-        run: sleep 10
-        shell: bash
-      - uses: actions/delete-package-versions@v4
-        name: delete non-build containers
-        with: 
-          package-name: "${{ github.event.repository.name }}"
-          package-type: 'container'
-          min-versions-to-keep: 4
-          delete-only-untagged-versions: 'true'
-          ignore-versions: '.*(buildcache|baseimage|builder)(|.*)'
-          #token: ${{ secrets.PACKAGE_TOKEN }}
-          token: ${{ github.token }}
+#      - name: Sleep for few seconds
+#        run: sleep 10
+#        shell: bash
+#      - uses: actions/delete-package-versions@v4
+#        name: delete non-build containers
+#        with: 
+#          package-name: "${{ github.event.repository.name }}"
+#          package-type: 'container'
+#          min-versions-to-keep: 4
+#          delete-only-untagged-versions: 'true'
+#          ignore-versions: '.*(buildcache|baseimage|builder)(|.*)'
+#          #token: ${{ secrets.PACKAGE_TOKEN }}
+#          token: ${{ github.token }}
