@@ -58,7 +58,7 @@ def run(nicehash_algorithms):
                 try:
                     output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
                 except:
-					output=""
+                    output=""
                 output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
                 output = output[ : output.find('H/s')]
                 hash_rate = cpuminer_driver._convert_to_float(output)
