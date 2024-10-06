@@ -45,8 +45,6 @@ RUN apt-get update && apt-get install -y libcurl4 libjansson4 python3 python3-nu
 COPY --from=builder /cpuminer-opt/cpuminer /usr/bin/cpuminer-opt
 COPY --from=builder /cpuminer/cpuminer /usr/bin/cpuminer
 
-
-
 ARG WALLET=MTemuJQsCQsQ639nRBTDKnwJu2M4eyv9Tg
 ENV WALLET $WALLET
 
