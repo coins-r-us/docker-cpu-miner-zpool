@@ -46,7 +46,7 @@ def run(nicehash_algorithms):
           algofile=cpuminer_driver.STOREDIR+"/"+algorithm+".json"
           if not os.path.isfile(algofile):
 #            bash_command = './cpuminer --benchmark --time-limit=13 -a ' + algorithm
-            bash_command = 'cpuminer --help |grep -q '+algorithm+' && cpuminer --benchmark --time-limit=42 -a ' + algorithm
+            bash_command = 'cpuminer --benchmark --time-limit=23 -a ' + algorithm
             optimal_nof_threads = 0
             optimal_hash_rate = 0
             logging.info('Benchmarking ' + algorithm + ' ...')
@@ -55,7 +55,10 @@ def run(nicehash_algorithms):
             #for t in range(min_threads, max_nof_threads,2 ):
             for t in [min_threads,int(multiprocessing.cpu_count()/2)]:
                 logging.info('with ' + str(t) + ' thread(s)')
-                output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
+                try:
+                    output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
+                except:
+					output=""
                 output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
                 output = output[ : output.find('H/s')]
                 hash_rate = cpuminer_driver._convert_to_float(output)
