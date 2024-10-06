@@ -37,7 +37,7 @@
 #RUN apk add python3  py3-numpy bash curl 
 FROM ubuntu:22.04 as builder
 RUN apt-get update && apt-get -y --no-install-recommends install git bash build-essential libssl-dev libgmp-dev libcurl4-openssl-dev libjansson-dev automake && rm -rf /var/lib/apt/lists/* && apt-get clean all
-RUN git clone https://github.com/JayDDee/cpuminer-opt/ /cpuminer-opt && cd /cpuminer-opt && bash autogen.sh && ./configure --with-crypto --with-curl && bash c 'make -j $(nproc)'
+RUN git clone https://github.com/JayDDee/cpuminer-opt.git /cpuminer-opt && cd /cpuminer-opt && bash autogen.sh && ./configure --with-crypto --with-curl && bash c 'make -j $(nproc)'
 RUN git clone https://github.com/tpruvot/cpuminer-multi.git /cpuminer  && cd /cpuminer && bash autogen.sh && ./configure --with-crypto --with-curl && bash c 'make -j $(nproc)'
 
 FROM ubuntu:22.04
