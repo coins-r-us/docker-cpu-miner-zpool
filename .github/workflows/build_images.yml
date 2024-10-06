@@ -14,10 +14,7 @@ on:
       - 'main'
 #  schedule:
 #    - cron: '4 2 * * *'
-on:
-  push:
-    branches:
-      - master
+
 
 jobs:
   action_cleanup:
