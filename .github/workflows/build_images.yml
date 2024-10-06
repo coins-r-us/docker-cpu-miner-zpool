@@ -6,9 +6,9 @@ concurrency:
 
 on:
   push:
-    paths:
-      - Dockerfile
-      - .github/workflows/build.yml
+#    paths:
+#      - Dockerfile
+#      - .github/workflows/build.yml
     branches:
       - 'master'
       - 'main'
