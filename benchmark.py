@@ -80,7 +80,7 @@ def run(nicehash_algorithms):
                 logging.info('algorithm ' + algorithm + ' not added because the hash rate was 0.')
 
     #json.dump(benchmarked_algorithms, open(cpuminer_driver.BENCHMARKS_FILE, 'w'))
-    useable_algo=[]
+    useable_algo={}
     for algorithm in nicehash_algorithms:
         if algorithm in miner_algorithms:
           algofile=cpuminer_driver.STOREDIR+"/"+algorithm+".json"
