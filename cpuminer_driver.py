@@ -42,6 +42,8 @@ WALLET  =  os.environ.get('WALLET',  'XoVozBiwEveoLk87JAZHHR3bX1TzH2geVs')
 WORKER  =  os.environ.get('WORKER',  'worker1') 
 PAYMETH =  os.environ.get('PAYMETH', 'DASH') 
 WAITTIME = int(os.environ.get('WAITTIME', 240))
+## the factor for how long the thingy will stay on on a a successfull algo is calculated with WAITTIME*WAIT_FURTER
+WAIT_FURTHER = 1.5
 
 REGION = os.environ.get('REGION', 'eu')  # eu, usa, hk, jp, in, br
 BENCHMARKS_FILE = STOREDIR+'/benchmarks.json'
@@ -74,7 +76,8 @@ class MinerThread(threading.Thread):
         self.time_running=0
         self.shares_found=0
         self.last_share=0
-
+        self.auth_fail='no'
+        
         self.process = None
         threading.Thread.__init__(self)
 
@@ -91,6 +94,8 @@ class MinerThread(threading.Thread):
                 if 'yes!' in line:
                     self.last_share=time()
                     self.shares_found  = self.shares_found + 1
+                if 'Stratum authentication failed' in line:
+                        self.auth_fail='fail'
                ##log but show share time and count after cpu line
                 #if 'CPU #' in line:
                 ## only first cpu (spam)
@@ -292,7 +297,7 @@ def main():
                 if cpuminer_thread.time_running > int(WAITTIME) and cpuminer_thread.shares_found == 0:
                     reset_payrate=True
                 ## difficulty may change and we want to keep track when we find no further shares but found at least one
-                if cpuminer_thread.time_running > int(WAITTIME) and cpuminer_thread.shares_found > 0 and ( (time() - cpuminer_thread.last_share ) > (int(WAITTIME)* 1.1) ):
+                if cpuminer_thread.time_running > int(WAITTIME) and cpuminer_thread.shares_found > 0 and ( (time() - cpuminer_thread.last_share ) > (int(WAITTIME)* WAIT_FURTHER) ):
                     reset_payrate=True
                 if reset_payrate:
                     payrates[running_algorithm] = 0
@@ -303,6 +308,9 @@ def main():
             killswitch='no'
             algoswitch=False
             payrateswitch=False
+            if cpuminer_thread.failed_auth == 'fail':
+                algoswitch=True
+                logging.info("auth_fail detected")
             # Switch algorithm if it's worth while
             if running_algorithm == None or running_algorithm != best_algorithm:
                 algoswitch=True
@@ -345,14 +353,21 @@ def main():
                 cpucount=benchmarks[best_algorithm]['nof_threads']
                 if int(MAXTHREADS) > 0 and int(MAXTHREADS) < benchmarks[best_algorithm]['nof_threads']:
                     cpucount=int(MAXTHREADS)
+                minerbin="cpuminer"
+                #STOREDIR+"/opt_"+best_algorithm
+                if os.path.isfile(STOREDIR+"/opt_"+best_algorithm):
+                    with open(STOREDIR+"/opt_"+best_algorithm, 'r') as file:
+                        minerbin = file.read().replace('\n', '')
+                minerobj=[minerbin, '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
+                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
+                    '-a', best_algorithm, '-t', str(cpucount)]
+                if "MINER_SOCKS" in os.environ:
+                    minerobj.append("--proxy")
+                    minerobj.append(os.environ.get("MINER_SOCKS"))
                 logging.info('starting mining using ' + best_algorithm + ' using ' + str(cpucount) + ' threads')
                 #cpuminer_thread = MinerThread(['./cpuminer', '-u', WALLET , '-p', WORKER + ',c=BTC',
-                logging.info(['cpuminer', '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
-                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                    '-a', best_algorithm, '-t', str(cpucount)])
-                cpuminer_thread = MinerThread(['cpuminer', '-u', WALLET , '-p', WORKER + ',c=' + PAYMETH,
-                    '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                    '-a', best_algorithm, '-t', str(cpucount)], cpucount)
+                #logging.info(minerobj)
+                cpuminer_thread = MinerThread(minerobj, cpucount)
                 cpuminer_thread.start()
                 running_algorithm = best_algorithm
                 killswitch='no'

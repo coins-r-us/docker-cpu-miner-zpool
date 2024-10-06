@@ -16,6 +16,9 @@ def run(nicehash_algorithms):
     f = open('algorithms.txt')
     miner_algorithms = f.readlines()
 
+    f = open('algorithms_opt.txt')
+    opt_algorithms = f.readlines()
+
     for i in range(len(miner_algorithms)):
         algorithm = miner_algorithms[i]
         end = algorithm.find('\n')
@@ -24,7 +27,7 @@ def run(nicehash_algorithms):
         if end > 0:
             miner_algorithms[i] = algorithm[: end]
 
-
+    benchtime=23
     ## Do the actual benchmark and find the optimal number of threads
 
     benchmarked_algorithms = {}
@@ -36,17 +39,22 @@ def run(nicehash_algorithms):
          min_threads=2
     counter = 0
     for algorithm in nicehash_algorithms:
-        if algorithm in miner_algorithms:
+        if algorithm in miner_algorithms or algorithm in opt_algorithms :
             counter=counter+1
     logging.info('testing '+str(counter)+" matching algos")
     #min_threads=int(multiprocessing.cpu_count()/2)
     benchmark_str = 'Benchmark: '
     for algorithm in nicehash_algorithms:
-        if algorithm in miner_algorithms:
+        if algorithm in miner_algorithms or algorithm in opt_algorithms :
           algofile=cpuminer_driver.STOREDIR+"/"+algorithm+".json"
           if not os.path.isfile(algofile):
 #            bash_command = './cpuminer --benchmark --time-limit=13 -a ' + algorithm
-            bash_command = 'cpuminer --benchmark --time-limit=23 -a ' + algorithm
+            bash_command = 'cpuminer --benchmark --time-limit='+str(benchtime)+' -a ' + algorithm
+            if not algorithm in miner_algorithms and algorithm in opt_algorithms:
+                f = open(cpuminer_driver.STOREDIR+"/opt_"+algorithm, "w")
+                f.write("cpuminer-opt")
+                f.close()
+                bash_command = 'cpuminer-opt --benchmark --time-limit='+str(benchtime)+' -a ' + algorithm
             optimal_nof_threads = 0
             optimal_hash_rate = 0
             logging.info('Benchmarking ' + algorithm + ' ...')
@@ -82,15 +90,15 @@ def run(nicehash_algorithms):
     #json.dump(benchmarked_algorithms, open(cpuminer_driver.BENCHMARKS_FILE, 'w'))
     useable_algo={}
     for algorithm in nicehash_algorithms:
-        if algorithm in miner_algorithms:
+        if algorithm in miner_algorithms or algorithm in opt_algorithms :
           algofile=cpuminer_driver.STOREDIR+"/"+algorithm+".json"
           if os.path.isfile(algofile):
               useable_algo[algorithm]=json.load(open(algofile))
     benchmarked_algorithms=useable_algo
     ## logging.info the results
     
-    logging.info('Final results: ' + str(benchmarked_algorithms))
-    logging.info('Done! The results are stored in benchmarks.json')
+    logging.info('Final results: ')
+    logging.info(str(benchmarked_algorithms),indent=4)
 
 
 if __name__ == '__main__':
