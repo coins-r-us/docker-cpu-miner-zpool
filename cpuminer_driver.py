@@ -310,6 +310,7 @@ def main():
             if cpuminer_thread != None and cpuminer_thread.auth_fail == 'fail':
                 algoswitch=True
                 logging.info("auth_fail detected")
+                killswitch='engaged'
             # Switch algorithm if it's worth while
             if running_algorithm == None or running_algorithm != best_algorithm:
                 algoswitch=True
