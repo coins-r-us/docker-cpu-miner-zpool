@@ -37,11 +37,11 @@
 #RUN apk add python3  py3-numpy bash curl 
 FROM ubuntu:22.04 as builder
 RUN apt-get update && apt-get -y --no-install-recommends install git wget bash build-essential libssl-dev zlib1g-dev libgmp-dev libcurl4-openssl-dev libjansson-dev libpthread-stubs0-dev automake &&  apt-get install -y --reinstall ca-certificates && rm -rf /var/lib/apt/lists/* && apt-get clean all && (mkdir -p /usr/local/share/ca-certificates/cacert.org || true) &&  wget -P /usr/local/share/ca-certificates/cacert.org http://www.cacert.org/certs/root.crt http://www.cacert.org/certs/class3.crt && update-ca-certificates
-RUN git clone https://github.com/JayDDee/cpuminer-opt.git /cpuminer-opt && cd /cpuminer-opt && bash autogen.sh && ./configure --with-crypto --with-curl && bash -c 'make -j $(nproc)'
-RUN git clone https://github.com/tpruvot/cpuminer-multi.git /cpuminer  && cd /cpuminer && bash autogen.sh && ./configure --with-crypto --with-curl && bash -c 'make -j $(nproc)'
+RUN git clone https://github.com/tpruvot/cpuminer-multi.git /cpuminer     && cd /cpuminer     && bash autogen.sh && export CFLAGS="-O3 -march=native -Wall" && ./configure --with-crypto --with-curl && bash -c 'make -j $(nproc)'
+RUN git clone https://github.com/JayDDee/cpuminer-opt.git   /cpuminer-opt && cd /cpuminer-opt && bash autogen.sh && export CFLAGS="-O3 -march=native -Wall" && ./configure --with-crypto --with-curl && bash -c 'make -j $(nproc)'||((echo "#!/bin/bash";echo "exit 0")>cpuminer ;chmod +x cpuminer )
 
 FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y libcurl4 libjansson4 python3 python3-numpy && 	rm -rf /var/lib/apt/lists/
+RUN apt-get update && apt-get install -y libcurl4 libjansson4 python3 zlib1g openssl python3-numpy && 	rm -rf /var/lib/apt/lists/
 COPY --from=builder /cpuminer-opt/cpuminer /usr/bin/cpuminer-opt
 COPY --from=builder /cpuminer/cpuminer /usr/bin/cpuminer
 

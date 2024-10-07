@@ -5,7 +5,7 @@ import logging
 import cpuminer_driver
 import os
 
-def run(nicehash_algorithms):
+def run(nicehash_algorithms,maxthreads):
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                         level=logging.INFO)
 
@@ -42,6 +42,10 @@ def run(nicehash_algorithms):
     #max_nof_threads = (multiprocessing.cpu_count()-2)
 
     max_nof_threads = int(multiprocessing.cpu_count()/2+1)
+    print("maxthreads"+str(maxthreads))
+    if maxthreads > max_nof_threads or maxthreads < max_nof_threads:
+        max_nof_threads=maxthreads
+    print("max_nof_threads"+str(max_nof_threads))    
     min_threads=1
     if multiprocessing.cpu_count() > 1:
          min_threads=2
@@ -74,8 +78,8 @@ def run(nicehash_algorithms):
                  myrange.append(threadstep)
                  threadstep=threadstep*2
                  
-            if threadstep < max_nof_threads:
-                myrange.append[max_nof_threads]
+            if (threadstep/2) < max_nof_threads:
+                myrange.append(max_nof_threads)
             #for t in [min_threads,int(multiprocessing.cpu_count()/2)]:
             logging.info('Benchmarking ' + algorithm + ' ... steps'+json.dumps(myrange))
             for t in myrange:

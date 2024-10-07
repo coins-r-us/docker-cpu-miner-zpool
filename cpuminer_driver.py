@@ -225,7 +225,7 @@ def main():
     ## ALWAYS BENCHMARK
     import benchmark
     paying, ports = nicehash_multialgo_info()
-    benchmark.run(paying.keys())
+    benchmark.run(paying.keys(),int(MAXTHREADS))
     
     # load benchmarks
     benchmarks = json.load(open(BENCHMARKS_FILE))
