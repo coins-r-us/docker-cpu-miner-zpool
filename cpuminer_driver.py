@@ -128,6 +128,14 @@ class MinerThread(threading.Thread):
                     # update
                     self.hash_sum[core_nr] += hash_rate * nof_hashes
                     self.nof_hashes[core_nr] += nof_hashes
+                elif 'Net hash rate (est)' in line:
+                    line = line[ : line.rfind('H/s')]
+                    #logging.info('parsing:')
+                    rate=line[line.rfind(') ') + 2 : ]
+                    print("cpuminer_opt_rate:"+rate)
+                    hash_rate = _convert_to_float(rate)
+                    
+                #'Net hash rate (est) 76.82 Mh/s'
                 elif 'stratum_recv_line failed' in line:
                     if time() - self.last_fail_time > 20:
                         # too long ago so reset
@@ -360,7 +368,7 @@ def main():
                         minerbin = file.read().replace('\n', '')
                 minerobj=[minerbin, '-u', WALLET , '-p', WORKER + ',c='+ PAYMETH,
                     '-o', 'stratum+tcp://' + best_algorithm + '.' + 'mine.zpool.ca:' + str(ports[best_algorithm]),
-                    '-a', best_algorithm, '-t', str(cpucount)]
+                    '-a', best_algorithm, "--api-bind" , "127.0.0.1:4049" ,'-t', str(cpucount)]
                 if "MINER_SOCKS" in os.environ:
                     minerobj.append("--proxy")
                     minerobj.append(os.environ.get("MINER_SOCKS"))
