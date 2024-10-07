@@ -40,7 +40,8 @@ def run(nicehash_algorithms,maxthreads):
 
     benchmarked_algorithms = {}
     #max_nof_threads = (multiprocessing.cpu_count()-2)
-
+    if maxthreads > multiprocessing.cpu_count():
+        maxthreads=multiprocessing.cpu_count()
     max_nof_threads = int(multiprocessing.cpu_count()/2+1)
     print("maxthreads"+str(maxthreads))
     if maxthreads > max_nof_threads or maxthreads < max_nof_threads:
