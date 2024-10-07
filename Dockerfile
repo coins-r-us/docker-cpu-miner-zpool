@@ -53,11 +53,7 @@ ENV PAYMETH $PAYMETH
 
 ENTRYPOINT /configureAndMine.sh
 
-COPY configureAndMine.sh  algorithms.txt /
+COPY configureAndMine.sh algorithms.txt algorithms_opt.txt cpuminer_driver.py benchmark.py /
 
 RUN chmod +x configureAndMine.sh
-
-COPY cpuminer_driver.py benchmark.py /
-
-
 

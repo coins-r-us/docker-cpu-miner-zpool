@@ -88,12 +88,9 @@ class MinerThread(threading.Thread):
         with subprocess.Popen(self.cmd, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) as self.process:
             for line in self.process.stdout:
                 self.time_running= time() - self.start_time
-                if 'yay' in line:
+                if 'yay' in line or 'Accepted' in line or 'yes!' in line:
                     self.shares_found  = self.shares_found + 1
                     self.last_share=time()
-                if 'yes!' in line:
-                    self.last_share=time()
-                    self.shares_found  = self.shares_found + 1
                 if 'Stratum authentication failed' in line:
                         self.auth_fail='fail'
                ##log but show share time and count after cpu line
@@ -188,25 +185,27 @@ def nicehash_mbtc_per_day(benchmarks, paying):
     paying -- algorithm pay information from ZPOOL
     """
     revenue = {}
+    RESTORETIME=int(WAITTIME) * len(benchmarks)
     for algorithm in benchmarks:
         # ignore revenue if the algorithm fails a lot
-        RESTORETIME=int(WAITTIME) * len(benchmarks)
         """logging.info('set restoretime to ' + str(RESTORETIME) )"""
         if 'last_fail_time' in benchmarks[algorithm] and time() - benchmarks[algorithm]['last_fail_time'] < RESTORETIME:
             revenue[algorithm] = 0
             continue
 
         # compute expected revenue
-        revenue[algorithm] = compute_revenue(paying[algorithm], benchmarks[algorithm]['hash_rate'])
-
-        # increase revenue by 20% if the algortihm hasn't been updated ever or if it has been more than 24h
-        if 'last_updated' not in benchmarks[algorithm]:
-            revenue[algorithm] *= 1.2
-        elif time() - benchmarks[algorithm]['last_updated'] > PROFIT_INCREASE_TIME:
-            nof_days_since_update = (time() - benchmarks[algorithm]['last_updated']) / PROFIT_INCREASE_TIME
-            revenue_multiplier = 1 + nof_days_since_update * 2 / 100
-            revenue[algorithm] *= min(1.2, revenue_multiplier)
-
+        if algorithm in paying:
+            revenue[algorithm] = compute_revenue(paying[algorithm], benchmarks[algorithm]['hash_rate'])
+		    
+            # increase revenue by 20% if the algortihm hasn't been updated ever or if it has been more than 24h
+            if 'last_updated' not in benchmarks[algorithm]:
+                revenue[algorithm] *= 1.2
+            elif time() - benchmarks[algorithm]['last_updated'] > PROFIT_INCREASE_TIME:
+                nof_days_since_update = (time() - benchmarks[algorithm]['last_updated']) / PROFIT_INCREASE_TIME
+                revenue_multiplier = 1 + nof_days_since_update * 2 / 100
+                revenue[algorithm] *= min(1.2, revenue_multiplier)
+        else:
+            revenue[algorithm]=0
     return revenue
 
 def compute_revenue(paying, hash_rate):
@@ -308,7 +307,7 @@ def main():
             killswitch='no'
             algoswitch=False
             payrateswitch=False
-            if cpuminer_thread.failed_auth == 'fail':
+            if cpuminer_thread != None and cpuminer_thread.auth_fail == 'fail':
                 algoswitch=True
                 logging.info("auth_fail detected")
             # Switch algorithm if it's worth while
