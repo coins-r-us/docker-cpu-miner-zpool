@@ -87,17 +87,17 @@ def run(nicehash_algorithms,maxthreads):
                 logging.info('with ' + str(t) + ' thread(s)')
                 try:
                     aoutput = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
-                    logging.info("→1")
-                    logging.info("→2")
-                    if "Benchmark: 0.00 H/s" in aoutput:
-                        logging.info("→3a1")
+                    logging.info(algorithm+"→1")
+                    logging.info(algorithm+"→2")
+                    if "Benchmark: 0.00 H/s" in aoutput or "Benchmark: 0.0 H/s" in aoutput:
+                        logging.info(algorithm+"→3a1")
                         ## catch e.g. qubit errors when there are single cpu results but the sum is wrongly shown as 0
                         combined_rate=0
                         #for thr_id in range(0,t-1):
-                        #    logging.info("→3a2.1")
+                        #    logging.info(algorithm+"→3a2.1")
                         #    searchstr="CPU #"+thr_id+": "
                         #    if searchstr in aoutput:
-                        #        logging.info("→3a2.2")
+                        #        logging.info(algorithm+"→3a2.2")
                         #        searchouta= aoutput[aoutput.rfind(searchstr) + len(searchstr) : ]
                         #        searchoutb= searchouta[ : searchouta.find('H/s')]
                         #        single_rate=cpuminer_driver._convert_to_float(searchoutb)
@@ -105,9 +105,9 @@ def run(nicehash_algorithms,maxthreads):
                         #            combined_rate=single_rate+combined_rate
                         #    else:
                         #        logging.info("no result for CPU #"+thr_id)
-                        logging.info("→3a2.1")
+                        logging.info(algorithm+"→3a2.1")
                         cpures= [0] * t
-                        logging.info("→3a2.2")
+                        logging.info(algorithm+"→3a2.2")
                         cpucount=1
                         for line in aoutput.split('\n'):
                             if "CPU #" in line:
@@ -131,7 +131,7 @@ def run(nicehash_algorithms,maxthreads):
                         print(cpures)
                         combined_rate=sum(cpures)
                         
-                        logging.info("→3a3")
+                        logging.info(algorithm+"→3a3")
                         hash_rate=0
                         if combined_rate>0:
                             hash_rate=combined_rate
@@ -143,19 +143,23 @@ def run(nicehash_algorithms,maxthreads):
                            logging.info(aoutput)
                     else:
                         if "Benchmark:" in aoutput:
-                            logging.info("→3b1")
+                            logging.info(algorithm+"→3b1")
                             boutput = aoutput[aoutput.rfind(benchmark_str) + len(benchmark_str) : ]
                             output = boutput[ : boutput.find('H/s')]
-                            #logging.info("→3b2")
+                            logging.info(algorithm+"→3b2")
                             print(output)
                             hash_rate = cpuminer_driver._convert_to_float(output)
                             #print(hash_rate)
+                            logging.info(algorithm+"→3b3")
                             if hash_rate > optimal_hash_rate:
                                 optimal_hash_rate = hash_rate
                                 optimal_nof_threads = t
+                            logging.info(algorithm+"→3b4")
                             if hash_rate == 0:
                                logging.info(aoutput)
-                    #logging.info("→DONE_RATE_DETECT")
+                        else:
+                            logging.info("failed finding search string")
+                    #logging.info(algorithm+"→DONE_RATE_DETECT")
                     #print(hash_rate)
                     #logging.info("rate returned: "+int(hash_rate))
 
@@ -164,6 +168,7 @@ def run(nicehash_algorithms,maxthreads):
                     output=""
                     hash_rate=0
                     try:
+                        logging.info("FAILED 2 BENCH:"+algorithm)
                         logging.info(aoutput)
                     except:
                         foo="bar"
