@@ -85,7 +85,9 @@ def run(nicehash_algorithms,maxthreads):
             logging.info('Benchmarking ' + algorithm + ' ... steps'+json.dumps(myrange))
             for t in myrange:
                 logging.info('with ' + str(t) + ' thread(s)')
+                aoutput=""
                 try:
+					
                     aoutput = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
                     logging.info(algorithm+"→1")
                     logging.info(algorithm+"→2")
