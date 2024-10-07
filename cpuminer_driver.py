@@ -96,14 +96,20 @@ class MinerThread(threading.Thread):
                ##log but show share time and count after cpu line
                 #if 'CPU #' in line:
                 ## only first cpu (spam)
+                printstatus="no"
                 if 'CPU #' in line:
                     if 'CPU #0' in line:
-                        laststring="never"
-                        if self.last_share != 0:
-                            laststring=str(int(time()-self.last_share)) + ' s ago '
+                        printstatus="yes"
+                if "Net hash rate (est)" in line:
+                    printstatus="yes"
+                if printstatus == "yes":
+                    laststring="never"
+                    if self.last_share != 0:
+                        laststring=str(int(time()-self.last_share)) + ' s ago '
                         logging.info(str( line[ : line.rfind('\n') ]) + '\trunning since: ' + '{:.3f}'.format(self.time_running) + 's\t| shares found: ' + str(self.shares_found) + '\t| last: ' + laststring )
                 else:
-                    logging.info(line[ : line.rfind('\n')])
+                    if not 'CPU #' in line:
+                        logging.info(line[ : line.rfind('\n')])
 
                 if 'CPU #' in line:
                     # find hash rate
@@ -134,7 +140,6 @@ class MinerThread(threading.Thread):
                     rate=line[line.rfind(') ') + 2 : ]
                     print("cpuminer_opt_rate:"+rate)
                     hash_rate = _convert_to_float(rate)
-                    
                 #'Net hash rate (est) 76.82 Mh/s'
                 elif 'stratum_recv_line failed' in line:
                     if time() - self.last_fail_time > 20:
@@ -204,7 +209,7 @@ def nicehash_mbtc_per_day(benchmarks, paying):
         # compute expected revenue
         if algorithm in paying:
             revenue[algorithm] = compute_revenue(paying[algorithm], benchmarks[algorithm]['hash_rate'])
-		    
+            
             # increase revenue by 20% if the algortihm hasn't been updated ever or if it has been more than 24h
             if 'last_updated' not in benchmarks[algorithm]:
                 revenue[algorithm] *= 1.2
