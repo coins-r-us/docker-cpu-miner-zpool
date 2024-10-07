@@ -64,9 +64,9 @@ def run(nicehash_algorithms):
             for t in [min_threads,int(multiprocessing.cpu_count()/2)]:
                 logging.info('with ' + str(t) + ' thread(s)')
                 try:
-                    output = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
-                    output = output[output.rfind(benchmark_str) + len(benchmark_str) : ]
-                    output = output[ : output.find('H/s')]
+                    aoutput = subprocess.check_output(['bash', '-c', bash_command + ' -t ' + str(t)]).decode("utf-8")
+                    boutput = aoutput[aoutput.rfind(benchmark_str) + len(benchmark_str) : ]
+                    output = boutput[ : boutput.find('H/s')]
                     hash_rate = cpuminer_driver._convert_to_float(output)
                 except:
                     output=""
@@ -85,7 +85,8 @@ def run(nicehash_algorithms):
                 
 
             else:
-                logging.info('algorithm ' + algorithm + ' not added because the hash rate was 0.')
+                logging.info('algorithm ' + algorithm + ' not added because the hash rate was 0. raw output: ')
+                loggin.info(aoutput)
 
     #json.dump(benchmarked_algorithms, open(cpuminer_driver.BENCHMARKS_FILE, 'w'))
     useable_algo={}
@@ -98,7 +99,7 @@ def run(nicehash_algorithms):
     ## logging.info the results
     
     logging.info('Final results: ')
-    logging.info(str(benchmarked_algorithms),indent=4)
+    logging.info(json.dump(benchmarked_algorithms,indent=4))
 
 
 if __name__ == '__main__':
