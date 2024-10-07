@@ -319,6 +319,7 @@ def main():
                 algoswitch=True
                 logging.info("auth_fail detected")
                 killswitch='engaged'
+                payrates[running_algorithm] = 0
             # Switch algorithm if it's worth while
             if running_algorithm == None or running_algorithm != best_algorithm:
                 algoswitch=True
