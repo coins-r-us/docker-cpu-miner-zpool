@@ -93,7 +93,7 @@ class MinerThread(threading.Thread):
                     self.last_share=time()
                 if 'authentication failed' in line:
                         self.auth_fail='fail'
-                        self.fail_count = 5
+                        self.fail_count = 6
                         self.last_fail_time = time()
                         logging.info("FAILED AUTH DETECTED")
                ##log but show share time and count after cpu line
