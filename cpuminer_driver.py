@@ -91,8 +91,11 @@ class MinerThread(threading.Thread):
                 if 'yay' in line or 'Accepted' in line or 'yes!' in line:
                     self.shares_found  = self.shares_found + 1
                     self.last_share=time()
-                if 'Stratum authentication failed' in line:
+                if 'authentication failed' in line:
                         self.auth_fail='fail'
+                        self.fail_count = 5
+                        self.last_fail_time = time()
+                        logging.info("FAILED AUTH DETECTED")
                ##log but show share time and count after cpu line
                 #if 'CPU #' in line:
                 ## only first cpu (spam)
@@ -303,6 +306,7 @@ def main():
                     benchmarks[running_algorithm]['last_fail_time'] = cpuminer_thread.last_fail_time
                     json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                     logging.error(running_algorithm + ' FAILS MORE THAN ALLOWED SO IGNORING IT FOR NOW!')
+                
             ### zero payrate if we get no shares for WAITTIME
                 #logging.info('checking ' + str(WAITTIME) + 'against' + cpuminer_thread.time_running + ' and sharecount ' + cpuminer_thread.shares_found
                 reset_payrate=False
@@ -316,7 +320,7 @@ def main():
                     benchmarks[running_algorithm]['last_fail_time'] = time()
                     json.dump(benchmarks, open(BENCHMARKS_FILE, 'w'))
                     logging.error(running_algorithm + ' HAS NO SHARES after ' + '{:6.3f}'.format(cpuminer_thread.time_running) + ' .. DISABLING FOR' + str(RESTORETIME) + ' seconds' )
-
+                         
             killswitch='no'
             algoswitch=False
             payrateswitch=False
