@@ -201,7 +201,9 @@ def nicehash_mbtc_per_day(benchmarks, paying):
     paying -- algorithm pay information from ZPOOL
     """
     revenue = {}
-    RESTORETIME=int(WAITTIME) * len(benchmarks)
+    ## restoretime originally was WAITTIME * ALL_ALGORITHMS
+    RESTORETIME=int(WAITTIME) *  2 * len(benchmarks)
+    ## do not fear , an empty revenue table will be reset 
     for algorithm in benchmarks:
         # ignore revenue if the algorithm fails a lot
         """logging.info('set restoretime to ' + str(RESTORETIME) )"""
@@ -249,6 +251,7 @@ def main():
 
     running_algorithm = None
     cpuminer_thread = None
+    last_rate_print = time()
 
     def profitinfo():
         printpayrates = nicehash_mbtc_per_day(benchmarks, paying)
@@ -324,11 +327,7 @@ def main():
             killswitch='no'
             algoswitch=False
             payrateswitch=False
-            if cpuminer_thread != None and cpuminer_thread.auth_fail == 'fail':
-                algoswitch=True
-                logging.info("auth_fail detected")
-                killswitch='engaged'
-                payrates[running_algorithm] = 0
+
             # Switch algorithm if it's worth while
             if running_algorithm == None or running_algorithm != best_algorithm:
                 algoswitch=True
@@ -344,6 +343,14 @@ def main():
                         logging.info("switching due to profitability from "+running_algorithm+" to "+best_algorithm)
                         killswitch='engaged'
                         profitinfo()
+
+            if cpuminer_thread != None and cpuminer_thread.auth_fail == 'fail':
+                algoswitch=True
+                logging.info("switching due to auth_fail detected")
+                killswitch='engaged'
+                payrates[running_algorithm] = 0;
+                cpuminer_thread.auth_fail='no'
+
             if algoswitch == True or payrateswitch == True:
                 killswitch='engaged'
             if  killswitch == 'engaged':
@@ -407,11 +414,12 @@ def main():
                     #logging.info('Current average hashrate is %f H/s' % hash_rate)
                     current_payrate = compute_revenue(paying[running_algorithm], hash_rate)
                     loginfo='at avg. cur. hashrate of ' + '{:.3f}'.format(hash_rate) + ' H/s'
-                    expectinfo= running_algorithm + ' is currently expected to generate %f mBTC/day or %f mBTC/month '   % (current_payrate, current_payrate * 365.25 / 12 )
+                    expectinfo= running_algorithm + ' generates approx.  %f mBTC/day or %f mBTC/month '   % (current_payrate, current_payrate * 365.25 / 12 )
                     longloginfo= expectinfo + loginfo
                     logging.info(longloginfo)
-
-        printHashRateAndPayRate()
+        if  time() > (last_rate_print+42):
+            printHashRateAndPayRate()
+            last_rate_print=time()
         sleep(UPDATE_INTERVAL / 2)
         if cpuminer_thread.shares_found != 0:
             printHashRateAndPayRate()
